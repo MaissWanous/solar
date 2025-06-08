@@ -5,7 +5,7 @@ module.exports=(sequelize, DataTypes)=>{
             type: DataTypes.INTEGER,
             references: {
                 model: products, 
-                key: 'produtId' 
+                key: 'productId' 
             }
         },
         inverterRatingP: {

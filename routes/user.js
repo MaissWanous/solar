@@ -9,7 +9,7 @@ const router = express.Router();
 app.use(express.json());
 
 let checkCode = 0;
-let userData;
+let userData; 
 let emailForget;
 router.post("/signup", async (req, res) => {
   const { Fname,Lname, phone, email, password,country ,type} = req.body;
