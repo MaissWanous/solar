@@ -104,9 +104,9 @@ router.get("/profile", async (req, res) => {
       .json({ message: "Unauthorized: Invalid token format" });
   }
   try {
-    const decoded = jwtService.verifyToken(token); // تحقق من صحة Refresh Token
+    const decoded = jwtService.verifyToken(token); 
 
-    const user = await userService.findById(decoded.userId); // ابحث عن المستخدم بناءً على معرف المستخدم في التوكن
+    const user = await userService.findById(decoded.userId); 
 
     if (!user) return res.status(403).json({ message: "Forbidden" });
 

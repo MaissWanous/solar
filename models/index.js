@@ -27,8 +27,18 @@ fs
     );
   })
   .forEach(file => {
-    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
-    db[model.name] = model;
+    const modelPath = path.join(__dirname, file);
+    const modelFactory = require(modelPath);
+    if (typeof modelFactory === 'function') {
+      const model = modelFactory(sequelize, Sequelize.DataTypes);
+      if (model && model.name) {
+        db[model.name] = model;
+      } else {
+        console.warn(`Warning: Model from file "${file}" is missing a name.`);
+      }
+    } else {
+      console.warn(`Warning: File "${file}" does not export a model factory function.`);
+    }
   });
 
 Object.keys(db).forEach(modelName => {
