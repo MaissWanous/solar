@@ -1,0 +1,33 @@
+
+
+### Create a new user
+POST http://localhost:4000/signup
+Content-Type: application/json
+
+{
+  "Fname": "John Doe",
+  "email": "whiteocjd@gmail.com",
+  "password":"1234",
+  "type":"shop"
+}
+###check code
+POST http://localhost:4000/checkCode
+Content-Type: application/json
+
+{
+  "checkCode": "0"
+}
+
+###log in
+POST http://localhost:4000/logIn
+Content-Type: application/json
+
+{
+  "email": "whiteocjd@gmail.com",
+  "password": "1234"
+}
+
+### Get profile
+GET http://localhost:4000/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0OTY2NjMyOX0.nK7EhGlrhYfOhlZeWldI8lXqvQUo6D7bh-eX01CtSQ0
+Content-Type: application/json

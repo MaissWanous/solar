@@ -9,17 +9,18 @@ const router = express.Router();
 app.use(express.json());
 
 let checkCode = 0;
-let userData; 
+let userData;
 let emailForget;
 router.post("/signup", async (req, res) => {
-  const { Fname,Lname, phone, email, password,country ,type} = req.body;
+
+  const { Fname, Lname, phone, email, password, country, type } = req.body;
 
   try {
     const data = await userService.checkUser({
-      Fname,Lname, phone, email, password,country ,type
+      Fname, Lname, phone, email, password, country, type
     });
     userData = data.userData;
-   
+
     res.status(200).json({ message: "Signup successful, check your code." });
   } catch (error) {
     console.error(error);
@@ -35,14 +36,14 @@ router.post("/checkCode", async (req, res) => {
 
     if (userCode == checkCode) {
       if (userData) {
+        console.log(userData)
         await userService.addUser(userData);
         const token = await authService.login(
           userData.email,
           userData.password
         );
-        res.json({ token });
       }
-      res.status(200).json({ message: "Check code." });
+      res.status(200).json({ message: "Check code.", token: token });
     } else {
       res.status(400).json({ error: "Invalid check code." });
     }
@@ -55,7 +56,12 @@ router.post("/logIn", async function (req, res) {
   const { email, password } = req.body;
   try {
     const token = await authService.login(email, password);
-    res.status(200).json({ token: token.token, message: token.message });
+    if (token.token != 0) {
+
+      res.status(200).json({ token: token.token, message: token.message });
+    } else {
+      res.status(500).json({ error: token.message })
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Invalid data" });
@@ -90,23 +96,20 @@ router.post("/resetPass", async function (req, res) {
 
 router.get("/profile", async (req, res) => {
   const authHeader = req.headers.authorization;
-  console.log(authHeader)
   if (!authHeader) {
     return res.status(401).json({
       message: "Unauthorized: Missing Authorization header",
     });
   }
   const token = authHeader.split(" ")[1];
-  console.log(token)
   if (!token) {
     return res
       .status(401)
       .json({ message: "Unauthorized: Invalid token format" });
   }
   try {
-    const decoded = jwtService.verifyToken(token); 
-
-    const user = await userService.findById(decoded.userId); 
+    const decoded = jwtService.verifyToken(token);
+    const user = await userService.findById(decoded.userId);
 
     if (!user) return res.status(403).json({ message: "Forbidden" });
 

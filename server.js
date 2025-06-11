@@ -21,7 +21,7 @@ app.use("/", productRout);
 // Establish database connection 
 db.sequelize.sync().then(() => {
     app.listen(4000, () => {
-        console.log("Server is running on port 3000");
+        console.log("Server is running on port 4000");
     });
 })
     .catch((error) => {
