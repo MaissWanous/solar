@@ -53,14 +53,17 @@ router.post("/checkCode", async (req, res) => {
 });
 router.post("/logIn", async function (req, res) {
   const { email, password } = req.body;
+
   try {
     const token = await authService.login(email, password);
+    console.log(email + password)
     res.status(200).json({ token: token.token, message: token.message });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Invalid data" });
   }
 });
+
 
 router.post("/forgetPassword", async function (req, res) {
   emailForget = req.body.email;

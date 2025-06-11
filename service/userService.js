@@ -85,14 +85,20 @@ const userService = {
     try {
       // Check for existing user with the same email
       const existingUser = await this.checkEmailExisting(email);
-
+         
       if (!existingUser) {
         return { message: -1 };
       }
+      console.log(userData.password+"oooooooo")
+      console.log(existingUser.password+"eeeeeee")
       const isMatch = await bcrypt.compare(
         userData.password,
         existingUser.password
       );
+      
+      
+   
+      console.log(isMatch+"pppppppppppppppp")
       if (!isMatch) {
         return { message: 0 };
       }
