@@ -32,16 +32,46 @@ router.post("/addProduct", async (req, res) => {
     }
 });
 
-// ✅ جلب المنتجات الخاصة بالمستخدم
-// router.get("/getMyProduct", async (req, res) => {
-//     try {
-//         const user = req.user; // الحصول على بيانات المستخدم من التوكن
-//         const products = await productService.getMyProduct(user); // ✅ استخدام await
-//         res.status(200).json({ message: "Products retrieved successfully.", products });
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ error: "Failed to retrieve products." });
-//     }
-// });
+
+router.get("/getMyProduct",  async (req, res) => { 
+    const authHeader = req.headers.authorization;
+      console.log(authHeader)
+      if (!authHeader) {
+        return res.status(401).json({
+          message: "Unauthorized: Missing Authorization header",
+        });
+      }
+      const token = authHeader.split(" ")[1];
+      console.log(token)
+      if (!token) {
+        return res
+          .status(401)
+          .json({ message: "Unauthorized: Invalid token format" });
+      }
+      try {
+        const decoded = jwtService.verifyToken(token); // تحقق من صحة Refresh Token
+    
+        const user = await productService.getMyProduct(decoded.userId); // ابحث عن المستخدم بناءً على معرف المستخدم في التوكن
+    
+        if (!user) return res.status(403).json({ message: "Forbidden" });
+    
+        res.json({ user: user });
+      } catch (error) {
+        console.error(error);
+        res.status(401).json({ message: "Unauthorized" });
+      }
+    //////////////
+   
+});
+
+router.get("/getAllProduct",async(req,res)=>{
+  try {
+    const products = await productService.getAllProducts();
+    res.status(200).json({ message: "get product successfully.", products });
+} catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to get product." });
+}
+})
 
 module.exports = router;

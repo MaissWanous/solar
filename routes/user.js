@@ -54,6 +54,7 @@ router.post("/checkCode", async (req, res) => {
 });
 router.post("/logIn", async function (req, res) {
   const { email, password } = req.body;
+
   try {
     const token = await authService.login(email, password);
     if (token.token != 0) {
@@ -67,6 +68,7 @@ router.post("/logIn", async function (req, res) {
     res.status(500).json({ error: "Invalid data" });
   }
 });
+
 
 router.post("/forgetPassword", async function (req, res) {
   emailForget = req.body.email;

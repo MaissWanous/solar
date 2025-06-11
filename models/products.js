@@ -1,5 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
-    const  shop= require("./shop")(sequelize, DataTypes); 
+    const shop = require("./shop")(sequelize, DataTypes);
+    
     const products = sequelize.define('products', {
         productId: {
             type: DataTypes.INTEGER,
@@ -9,21 +10,19 @@ module.exports = (sequelize, DataTypes) => {
         shopId: {
             type: DataTypes.INTEGER,
             references: {
-                model: shop, 
-                key: 'shopId' 
+                model: shop,
+                key: 'shopId'
             }
         },
-        picture: {
-            type: DataTypes.STRING
-        },
-        category: {
-            type: DataTypes.STRING
-        },
-        description: {
-            type: DataTypes.STRING
-        },
-     
+        picture: { type: DataTypes.STRING },
+        category: { type: DataTypes.STRING },
+        description: { type: DataTypes.STRING },
+        comment: { type: DataTypes.STRING },
+        stars: { type: DataTypes.INTEGER }
     });
 
+    // تعريف العلاقة بين المنتجات والمتجر
+    products.belongsTo(shop, { foreignKey: 'shopId' });
+
     return products;
-}
+};
