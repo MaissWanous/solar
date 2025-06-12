@@ -1,5 +1,4 @@
-
-
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsImlhdCI6MTc0OTc2MzAzNX0.URiPjUXvmDRIH0q2AoXL30x4M8Z6ffUKvuoXhVSC3BQ
 ### Create a new user
 POST http://localhost:4000/signup
 Content-Type: application/json
@@ -8,15 +7,17 @@ Content-Type: application/json
   "Fname": "John Doe",
   "email": "whiteocjd@gmail.com",
   "password":"1234",
-  "type":"shop"
+  "type":"shopKeeper"
 }
 ###check code
-POST http://localhost:4000/checkCode
+POST http://localhost:4000/verify
 Content-Type: application/json
 
 {
+  "email": "whiteocjd@gmail.com",
   "checkCode": "0"
 }
+
 
 ###log in
 POST http://localhost:4000/logIn
@@ -29,5 +30,25 @@ Content-Type: application/json
 
 ### Get profile
 GET http://localhost:4000/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0OTY2NjMyOX0.nK7EhGlrhYfOhlZeWldI8lXqvQUo6D7bh-eX01CtSQ0
+Authorization: Bearer {{token}}
 Content-Type: application/json
+
+### Get my product
+GET http://localhost:4000/getMyProduct
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### Add product
+POST http://localhost:4000/addProduct
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "productData":{
+    "category":"battery"
+  },
+  "additionalData":{
+    "batteryType":"1",
+    "batterySize":"55"
+  }
+}

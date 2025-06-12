@@ -3,12 +3,12 @@ const jwtService = require('./jwtService');
 const userService = require('./userService');
 async function login(email, password) {
     try {
-        const user = await userService.checkLogIn({ email, password });
+        const user = await userService.login({ email, password });
       
         let token;
-        if ( user.existingUser) {
+        if ( user.user) {
 
-            token = jwtService.generateToken({ userId: user.existingUser.accountId });
+            token = jwtService.generateToken({ userId: user.user.accountId });
 
             return ({ token: token, message: user.message })
         }

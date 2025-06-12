@@ -1,126 +1,135 @@
 const express = require("express");
+const router = express.Router();
 const userService = require("../service/userService");
 const authService = require("../service/authService");
 const jwtService = require("../service/jwtService");
 
-const app = express();
-const router = express.Router();
+router.use(express.json());
 
-app.use(express.json());
+// In-memory temporary store 
+const tempStore = {};
 
-let checkCode = 0;
-let userData;
-let emailForget;
+/**
+ * User Signup - Step 1: Register and send verification code
+ */
 router.post("/signup", async (req, res) => {
-
   const { Fname, Lname, phone, email, password, country, type } = req.body;
 
   try {
-    const data = await userService.checkUser({
-      Fname, Lname, phone, email, password, country, type
+    // Check user data and send code
+    const { checkCode, userData } = await userService.prepareSignup({
+      Fname, Lname, phone, email, password, country, type,
     });
-    userData = data.userData;
 
-    res.status(200).json({ message: "Signup successful, check your code." });
+    // Store temporarily 
+    tempStore[email] = { userData, checkCode };
+
+    res.status(200).json({ message: "Signup initiated. Check your email for the verification code." });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Invalid data" });
+    console.error("Signup error:", error);
+    res.status(400).json({ error: error.message });
   }
 });
 
-router.post("/checkCode", async (req, res) => {
-  const userCode = parseInt(req.body.checkCode);
-  //   const userData = req.session.userData;
+/**
+ * Signup - Step 2: Verify code and complete registration
+ */
+router.post("/verify", async (req, res) => {
+  const { email, checkCode } = req.body;
+
   try {
-    console.log(checkCode == userCode);
-
-    if (userCode == checkCode) {
-      if (userData) {
-        console.log(userData)
-        await userService.addUser(userData);
-        const token = await authService.login(
-          userData.email,
-          userData.password
-        );
-      }
-      res.status(200).json({ message: "Check code.", token: token });
-    } else {
-      res.status(400).json({ error: "Invalid check code." });
-    }
+    const { createdUser, rawPassword } = await userService.completeSignup(email, checkCode);
+    const token = await authService.login(email, rawPassword); // use original password
+    res.status(201).json({ message: "Signup completed successfully.", token });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "An error occurred while adding the user." });
+    console.error("Verification error:", error);
+    res.status(400).json({ error: error.message });
   }
 });
-router.post("/logIn", async function (req, res) {
+
+/**
+ * Login
+ */
+router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const token = await authService.login(email, password);
-    if (token.token != 0) {
-
-      res.status(200).json({ token: token.token, message: token.message });
-    } else {
-      res.status(500).json({ error: token.message })
+    const token= await authService.login(email, password);
+    if (token.token === 0) {
+      return res.status(401).json({ error: token.message });
     }
+
+    res.status(200).json({ token:token.token,message: token.message });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Invalid data" });
+    console.error("Login error:", error);
+    res.status(500).json({ error: "Failed to log in." });
   }
 });
 
+/**
+ * Forget Password - Send reset code
+ */
+router.post("/forgot-password", async (req, res) => {
+  const { email } = req.body;
 
-router.post("/forgetPassword", async function (req, res) {
-  emailForget = req.body.email;
   try {
-    const data = await userService.checkEmailExisting(emailForget);
-    if (data) {
-      checkCode = await userService.sendCode(emailForget);
-      console.log(checkCode);
-      res.status(200).send("Email send");
+    const user = await userService.checkEmailExisting(email);
+    if (!user) return res.status(404).json({ error: "Email not found." });
+
+    const code = await userService.sendCode(email);
+    tempStore[email] = { resetCode: code };
+
+    res.status(200).json({ message: "Reset code sent to your email." });
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    res.status(500).json({ error: "Failed to send reset code." });
+  }
+});
+
+/**
+ * Reset Password
+ */
+router.post("/reset-password", async (req, res) => {
+  const { email, newPassword, resetCode } = req.body;
+
+  try {
+    const entry = tempStore[email];
+    if (!entry || parseInt(resetCode) !== entry.resetCode) {
+      return res.status(400).json({ error: "Invalid or expired reset code." });
     }
+
+    await userService.updatePassword(email, newPassword);
+    delete tempStore[email];
+
+    res.status(200).json({ message: "Password updated successfully." });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Invalid data" });
-  }
-});
-router.post("/resetPass", async function (req, res) {
-  const { password } = req.body;
-  try {
-    const updatePass = await userService.updatePassword(emailForget, password);
-    console.log(updatePass);
-    res.status(200).send("reset password");
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Invalid data" });
+    console.error("Reset password error:", error);
+    res.status(500).json({ error: "Failed to reset password." });
   }
 });
 
+/**
+ * Get User Profile (Protected)
+ */
 router.get("/profile", async (req, res) => {
   const authHeader = req.headers.authorization;
-  if (!authHeader) {
-    return res.status(401).json({
-      message: "Unauthorized: Missing Authorization header",
-    });
+  if (!authHeader?.startsWith("Bearer ")) {
+    return res.status(401).json({ error: "Missing or malformed token." });
   }
+
   const token = authHeader.split(" ")[1];
-  if (!token) {
-    return res
-      .status(401)
-      .json({ message: "Unauthorized: Invalid token format" });
-  }
+
   try {
     const decoded = jwtService.verifyToken(token);
     const user = await userService.findById(decoded.userId);
 
-    if (!user) return res.status(403).json({ message: "Forbidden" });
+    if (!user) return res.status(404).json({ error: "User not found." });
 
-    res.json({ user: user });
+    res.status(200).json({ user });
   } catch (error) {
-    console.error(error);
-    res.status(401).json({ message: "Unauthorized" });
+    console.error("Profile error:", error);
+    res.status(401).json({ error: "Unauthorized access." });
   }
-})
-
+});
 
 module.exports = router;

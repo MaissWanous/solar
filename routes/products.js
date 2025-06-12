@@ -3,75 +3,69 @@ const productService = require("../service/productService");
 const jwtService = require("../service/jwtService");
 const router = express.Router();
 
-// ✅ إضافة منتج
 router.post("/addProduct", async (req, res) => {
-    const { productData, additionalData } = req.body;
-    const authHeader = req.headers.authorization;
-    console.log(authHeader)
-    if (!authHeader) {
-        return res.status(401).json({
-            message: "Unauthorized: Missing Authorization header",
-        });
-    }
-    const token = authHeader.split(" ")[1];
-    console.log(token)
-    if (!token) {
-        return res
-            .status(401)
-            .json({ message: "Unauthorized: Invalid token format" });
-    }
-    try {
-        const decoded = jwtService.verifyToken(token);
+  const { productData, additionalData } = req.body;
+  const authHeader = req.headers.authorization;
 
-        const product = await productService.addProduct(decoded.userId, productData, additionalData);
-        res.status(200).json({ message: "Product added successfully.", product });
-        const user = await userService.findById();
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Failed to add product." });
-    }
-});
+  if (!authHeader) {
+    return res.status(401).json({ message: "Missing Authorization header" });
+  }
 
+  const token = authHeader.split(" ")[1];
+  if (!token) {
+    return res.status(401).json({ message: "Invalid token format" });
+  }
 
-router.get("/getMyProduct",  async (req, res) => { 
-    const authHeader = req.headers.authorization;
-      console.log(authHeader)
-      if (!authHeader) {
-        return res.status(401).json({
-          message: "Unauthorized: Missing Authorization header",
-        });
-      }
-      const token = authHeader.split(" ")[1];
-      console.log(token)
-      if (!token) {
-        return res
-          .status(401)
-          .json({ message: "Unauthorized: Invalid token format" });
-      }
-      try {
-        const decoded = jwtService.verifyToken(token); // تحقق من صحة Refresh Token
-    
-        const user = await productService.getMyProduct(decoded.userId); // ابحث عن المستخدم بناءً على معرف المستخدم في التوكن
-    
-        if (!user) return res.status(403).json({ message: "Forbidden" });
-    
-        res.json({ user: user });
-      } catch (error) {
-        console.error(error);
-        res.status(401).json({ message: "Unauthorized" });
-      }
-    //////////////
-   
-});
-
-router.get("/getAllProduct",async(req,res)=>{
   try {
-    const products = await productService.getAllProducts();
-    res.status(200).json({ message: "get product successfully.", products });
-} catch (error) {
-    console.error(error);
+    const decoded = jwtService.verifyToken(token);
+    const product = await productService.addProduct(decoded.userId, productData, additionalData);
+    res.status(200).json({ message: "Product added successfully", product });
+  } catch (error) {
+    console.error("Add product error:", error.message);
+    res.status(500).json({ error: error.message || "Failed to add product." });
+  }
+});
+
+router.get("/getMyProduct", async (req, res) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader) {
+    return res.status(401).json({ message: "Missing Authorization header" });
+  }
+
+  const token = authHeader.split(" ")[1];
+  if (!token) {
+    return res.status(401).json({ message: "Invalid token format" });
+  }
+
+  try {
+    const decoded = jwtService.verifyToken(token);
+    const result = await productService.getMyProduct(decoded.userId);
+
+    if (!result.success) {
+      return res.status(404).json({ message: result.message });
+    }
+
+    res.status(200).json({ products: result.data });
+  } catch (error) {
+    console.error("Get my product error:", error.message);
+    res.status(500).json({ message: "Unauthorized" });
+  }
+});
+
+router.get("/getAllProduct", async (req, res) => {
+  try {
+    const result = await productService.getAllProducts();
+
+    if (!result.success) {
+      return res.status(404).json({ message: result.message });
+    }
+
+    res.status(200).json({ products: result.data });
+  } catch (error) {
+    console.error("Get all products error:", error.message);
     res.status(500).json({ error: "Failed to get product." });
-}
-})
+  }
+});
 
 module.exports = router;
