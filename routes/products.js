@@ -40,6 +40,7 @@ router.get("/getMyProduct", async (req, res) => {
 
   try {
     const decoded = jwtService.verifyToken(token);
+    console.log(decoded.userId)
     const result = await productService.getMyProduct(decoded.userId);
 
     if (!result.success) {

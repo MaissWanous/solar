@@ -38,7 +38,7 @@ GET http://localhost:4000/getMyProduct
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
-### Add product
+### Add battery
 POST http://localhost:4000/addProduct
 Authorization: Bearer {{token}}
 Content-Type: application/json
@@ -50,5 +50,21 @@ Content-Type: application/json
   "additionalData":{
     "batteryType":"1",
     "batterySize":"55"
+  }
+}
+###add inverter
+POST http://localhost:4000/addProduct
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "productData":{
+    "category":"inverter",
+    "price":"10",
+    "name": "inverter"
+
+  },
+  "additionalData":{
+    "inverterRatingP":"1"
   }
 }

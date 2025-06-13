@@ -1,28 +1,34 @@
 module.exports = (sequelize, DataTypes) => {
-    const shop = require("./shop")(sequelize, DataTypes);
-    
-    const products = sequelize.define('products', {
-        productId: {
-            type: DataTypes.INTEGER,
-            primaryKey: true,
-            autoIncrement: true
-        },
-        shopId: {
-            type: DataTypes.INTEGER,
-            references: {
-                model: shop,
-                key: 'shopId'
-            }
-        },
-        picture: { type: DataTypes.STRING },
-        category: { type: DataTypes.STRING },
-        description: { type: DataTypes.STRING },
-        comment: { type: DataTypes.STRING },
-        stars: { type: DataTypes.INTEGER }
+  const products = sequelize.define('products', {
+    productId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
+    shopId: DataTypes.INTEGER,
+    name: DataTypes.STRING,
+    price: DataTypes.INTEGER,
+    category: DataTypes.STRING
+  });
+
+  // Associations (define inside an `associate` method if you're using index.js structure)
+  products.associate = (models) => {
+    products.belongsTo(models.shop, {
+      foreignKey: 'shopId'
     });
 
-    // تعريف العلاقة بين المنتجات والمتجر
-    products.belongsTo(shop, { foreignKey: 'shopId' });
+    products.hasOne(models.battery, {
+      foreignKey: 'productId'
+    });
 
-    return products;
+    products.hasOne(models.inverter, {
+      foreignKey: 'productId'
+    });
+
+    products.hasOne(models.solar_panel, {
+      foreignKey: 'productId'
+    });
+  };
+
+  return products;
 };
