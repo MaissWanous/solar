@@ -68,3 +68,6 @@ Content-Type: application/json
     "inverterRatingP":"1"
   }
 }
+### Get all product
+GET http://localhost:4000/getAllProduct
+Content-Type: application/json

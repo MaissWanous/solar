@@ -159,25 +159,76 @@ const productService = {
 
   async getAllProducts() {
     try {
-      const allProducts = await products.findAll({
+      const Products = await products.findAll({
         include: [
+          {
+            model: shop,
+          },
+          { model: battery, required: false },
           { model: inverter, required: false },
-          { model: solar_panel, required: false },
-          { model: battery, required: false }
+          { model: solar_panel, required: false }
         ]
       });
+      console.log(products)
 
-      if (allProducts.length === 0) {
-        return { success: false, message: "No products found in shops." };
+      if (!Products || Products.length === 0) {
+        return { success: false, message: "No products found in your shop." };
       }
 
-      return { success: true, data: allProducts };
+      // Transform data
+      const cleanProducts = Products.map(product => {
+        const base = {
+          productId: product.productId,
+          name: product.name ?? null,
+          price: product.price ?? null,
+          category: product.category,
+          createdAt: product.createdAt,
+          shop: {
+            shopId: product.shop.shopId?? undefined,
+            shopname: product.shop.shopname ?? undefined,
+            phone: product.shop.phone ?? undefined
+          }
+        };
+
+        // Add category-specific info
+        if (product.category === 'battery' && product.battery) {
+          base.details = {
+            batteryType: product.battery.batteryType,
+            batterySize: product.battery.batterySize
+          };
+        } else if (product.category === 'inverter' && product.inverter) {
+          base.details = {
+
+
+            inverterRatingP: product.inverter.inverterRatingP,
+            maxAc: product.inverter.maxAc,
+            defaultAc: product.inverter.defaultAc,
+            solarRatingP: product.inverter.solarRatingP,
+            maxSolarVolt: product.inverter.maxSolarVolt,
+            Mppt: product.inverter.Mppt
+          };
+        } else if (product.category === 'solar_panel' && product.solar_panel) {
+          base.details = {
+            maximumPower: product.solar_panel.maximumPower,
+            shortCurrent: product.solar_panel.shortCurrent,
+            openVoltage: product.solar_panel.openVoltage
+          };
+        }
+
+        return base;
+      });
+
+      return {
+        success: true,
+        data: cleanProducts
+      };
+
     } catch (err) {
       console.error("Error fetching products:", err);
       return {
         success: false,
         message: "Failed to retrieve products.",
-        error: process.env.NODE_ENV === "development" ? err.message : null
+        error: err.message
       };
     }
   }

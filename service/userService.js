@@ -53,7 +53,8 @@ const userService = {
     if (existing) throw new Error("Email already exists.");
 
     const hashedPassword = await bcrypt.hash(userData.password, 10);
-    const checkCode = Math.floor(100000 + Math.random() * 900000); // 6-digit code
+    const checkCode = 0;
+    // Math.floor(100000 + Math.random() * 900000); // 6-digit code
 
     // Save plain password for login after signup
     pendingUsers[userData.email] = {
