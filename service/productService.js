@@ -6,80 +6,101 @@ const {
   shop,
   sequelize,
 } = require("../models");
+const path = require('path');
+const fs = require('fs');
 
 const productService = {
-  async addProduct(userId, productData, additionalData) {
-    const transaction = await sequelize.transaction();
-    try {
-      // 1. Find the shop associated with the user
-      const userShop = await shop.findOne({
-        where: { shopKeeperId: userId },
-        transaction
-      });
+async addProduct(userId, productData, additionalData, imageFile) {
+  const transaction = await sequelize.transaction();
+  let product;
 
-      if (!userShop) {
-        throw new Error("No shop found for this user.");
-      }
+  try {
+    // 1. Find the shop
+    const userShop = await shop.findOne({
+      where: { shopKeeperId: userId },
+      transaction
+    });
 
-      // 2. Validate basic product data
-      if (!productData.category) {
-        throw new Error("Missing required product fields (category, name, price).");
-      }
-
-      // 3. Attach shopId to productData
-      productData.shopId = userShop.shopId;
-      productData.price = parseInt(productData.price);
-
-      // 4. Create product
-      const product = await products.create(productData, { transaction });
-
-      if (!product || !product.productId) {
-        throw new Error("Product creation failed.");
-      }
-
-      // 5. Add to the corresponding category table
-      switch (productData.category.toLowerCase()) {
-        case "battery":
-          if (!additionalData.batteryType || !additionalData.batterySize) {
-            throw new Error("Missing battery fields.");
-          }
-          await battery.create({
-            productId: product.productId,
-            ...additionalData
-          }, { transaction });
-          break;
-
-        case "inverter":
-          await inverter.create({
-            productId: product.productId,
-            ...additionalData
-          }, { transaction });
-          break;
-
-        case "solar_panel":
-          await solar_panel.create({
-            productId: product.productId,
-            ...additionalData
-          }, { transaction });
-          break;
-
-        default:
-          throw new Error(`Unsupported product category: ${productData.category}`);
-      }
-
-      // 6. Commit the transaction
-      await transaction.commit();
-
-      return product;
-
-    } catch (err) {
-      await transaction.rollback();
-      console.error("Error adding product:", err.message);
-      throw err;
+    if (!userShop) {
+      throw new Error("No shop found for this user.");
     }
-  }
-  ,
 
+    // 2. Validate
+    if (!productData.category || !productData.name || !productData.price) {
+      throw new Error("Missing required product fields (category, name, price).");
+    }
+
+    // 3. Attach shopId
+    productData.shopId = userShop.shopId;
+    productData.price = parseInt(productData.price);
+
+    // 4. Create product
+    product = await products.create(productData, { transaction });
+
+    // 5. Add to category table
+    switch (productData.category.toLowerCase()) {
+      case "battery":
+        if (!additionalData.batteryType || !additionalData.batterySize) {
+          throw new Error("Missing battery fields.");
+        }
+        await battery.create({ productId: product.productId, ...additionalData }, { transaction });
+        break;
+      case "inverter":
+        await inverter.create({ productId: product.productId, ...additionalData }, { transaction });
+        break;
+      case "solar_panel":
+        await solar_panel.create({ productId: product.productId, ...additionalData }, { transaction });
+        break;
+      default:
+        throw new Error(`Unsupported product category: ${productData.category}`);
+    }
+
+    // 6. Commit DB changes
+    await transaction.commit();
+
+  } catch (err) {
+    await transaction.rollback();
+    console.error("Error adding product:", err.message);
+    throw err;
+  }
+
+  // 7. Upload image 
+  try {
+    if (imageFile) {
+      const validTypes = ['image/jpeg', 'image/png'];
+      if (!validTypes.includes(imageFile.mimetype)) {
+        throw new Error('Only JPEG and PNG files are allowed.');
+      }
+
+      if (imageFile.size > 2 * 1024 * 1024) {
+        throw new Error('File size exceeds 2MB.');
+      }
+
+      const fileName = `${Date.now()}_${imageFile.name}`;
+      const uploadDir = path.join(__dirname, '../public/uploads');
+
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+
+      const uploadPath = path.join(uploadDir, fileName);
+      const dbPath = `/uploads/${fileName}`;
+
+      await imageFile.mv(uploadPath);
+
+      // Save image path
+      product.picture = dbPath;
+      await product.save();
+    }
+  } catch (imgErr) {
+    console.error("Image upload failed:", imgErr.message);
+    // Optional: log or mark product as missing image, but don't throw
+  }
+
+  return product;
+}
+
+  ,
   async getMyProduct(userId) {
     try {
       const myProducts = await products.findAll({
@@ -104,6 +125,7 @@ const productService = {
           productId: product.productId,
           name: product.name ?? null,
           price: product.price ?? null,
+          picture:product.picture??null,
           category: product.category,
           createdAt: product.createdAt,
           shop: {
@@ -184,7 +206,7 @@ const productService = {
           category: product.category,
           createdAt: product.createdAt,
           shop: {
-            shopId: product.shop.shopId?? undefined,
+            shopId: product.shop.shopId ?? undefined,
             shopname: product.shop.shopname ?? undefined,
             phone: product.shop.phone ?? undefined
           }

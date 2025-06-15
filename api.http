@@ -60,14 +60,29 @@ Content-Type: application/json
 {
   "productData":{
     "category":"inverter",
-    "price":"10",
-    "name": "inverter"
+    "price":"100",
+    "name": "inverter3"
 
   },
   "additionalData":{
     "inverterRatingP":"1"
   }
 }
+###test add product with picture in cmd 
+curl -X POST http://localhost:4000/addProduct ^
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsImlhdCI6MTc0OTc2MzAzNX0.URiPjUXvmDRIH0q2AoXL30x4M8Z6ffUKvuoXhVSC3BQ" ^
+  -F "productData={\"category\":\"inverter\",\"price\":\"10\",\"name\":\"inverter2\"}" ^
+  -F "additionalData={\"inverterRatingP\":\"2\"}" ^
+  -F "picture=@profile.jpg"
+
 ### Get all product
 GET http://localhost:4000/getAllProduct
 Content-Type: application/json
+
+### Upload profile picture
+# in cmd 
+# curl -X POST http://localhost:4000/upload-profile-pic ^
+#   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsImlhdCI6MTc0OTc2MzAzNX0.URiPjUXvmDRIH0q2AoXL30x4M8Z6ffUKvuoXhVSC3BQ" ^
+#   -F "profilePic=@profile.jpg"
+
+

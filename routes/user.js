@@ -46,7 +46,32 @@ router.post("/verify", async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 });
+/**
+ * upload profile picture
+ */
+router.post('/upload-profile-pic', async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader?.startsWith("Bearer ")) {
+      return res.status(401).json({ error: "Missing or malformed token." });
+    }
 
+    const token = authHeader.split(" ")[1];
+    const decoded = jwtService.verifyToken(token);
+    const userId = decoded.userId;
+
+    const imageFile = req.files?.profilePic;
+    console.log("req.files:", req.files);
+    console.log("req.body:", req.body);
+
+    const dbPath = await userService.uploadProfilePicture(userId, imageFile);
+
+    res.status(200).json({ message: "Profile picture uploaded successfully.", path: dbPath });
+  } catch (err) {
+    console.error("Upload error:", err);
+    res.status(400).json({ error: err.message });
+  }
+});
 /**
  * Login
  */
@@ -54,12 +79,12 @@ router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const token= await authService.login(email, password);
+    const token = await authService.login(email, password);
     if (token.token === 0) {
       return res.status(401).json({ error: token.message });
     }
 
-    res.status(200).json({ token:token.token,message: token.message });
+    res.status(200).json({ token: token.token, message: token.message });
   } catch (error) {
     console.error("Login error:", error);
     res.status(500).json({ error: "Failed to log in." });

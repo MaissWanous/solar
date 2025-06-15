@@ -3,6 +3,7 @@ const Sequelize = require('sequelize');
 const fileUpload = require('express-fileupload');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const path = require('path');
 const db = require("./models");
 const app = express()
 // Set up middleware
@@ -11,6 +12,8 @@ app.use(fileUpload());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.json());
+app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
+
 
 // API routes
 const userRout = require("./routes/user");

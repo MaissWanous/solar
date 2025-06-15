@@ -25,6 +25,10 @@ module.exports = (sequelize, DataTypes) => {
         },
         type: {
             type: DataTypes.STRING
+        },
+        profilePic: {
+            type: DataTypes.STRING, 
+            allowNull: true,
         }
     });
 

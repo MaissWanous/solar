@@ -2,6 +2,8 @@
 const { account, shop } = require("../models");
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
+const path = require('path');
+const fs = require('fs');
 
 const pendingUsers = {}; // In-memory temp store (consider Redis in production)
 
@@ -29,8 +31,8 @@ const userService = {
         host: "smtp.elasticemail.com",
         port: 2525,
         auth: {
-           user: "whiteocjd@gmail.com",
-           pass: "70028532E494746FB9CD5CDA7519A033E123",
+          user: "whiteocjd@gmail.com",
+          pass: "70028532E494746FB9CD5CDA7519A033E123",
         },
       });
 
@@ -48,7 +50,7 @@ const userService = {
     return confirmCode;
   },
 
- async prepareSignup(userData) {
+  async prepareSignup(userData) {
     const existing = await account.findOne({ where: { email: userData.email } });
     if (existing) throw new Error("Email already exists.");
 
@@ -88,12 +90,12 @@ const userService = {
   async login({ email, password }) {
     const user = await this.checkEmailExisting(email);
     let message;
-    if (!user) message="User not found";
+    if (!user) message = "User not found";
 
     const valid = await bcrypt.compare(password, user.password);
-    if (!valid) message="Incorrect password";
+    if (!valid) message = "Incorrect password";
 
-    return {user,message};
+    return { user, message };
   },
 
   async updatePassword(email, newPassword) {
@@ -104,6 +106,46 @@ const userService = {
     await user.save();
     return true;
   },
+  async uploadProfilePicture(userId, imageFile) {
+    if (!imageFile) {
+      throw new Error("No image file uploaded.");
+    }
+
+    const validTypes = ['image/jpeg', 'image/png'];
+    if (!validTypes.includes(imageFile.mimetype)) {
+      throw new Error('Only JPEG and PNG files are allowed.');
+    }
+
+    if (imageFile.size > 2 * 1024 * 1024) {
+      throw new Error('File size exceeds 2MB.');
+    }
+
+    const fileName = `${Date.now()}_${imageFile.name}`;
+    const uploadDir = path.join(__dirname, '../public/uploads');
+
+    // Ensure the uploads folder exists
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+    const uploadPath = path.join(uploadDir, fileName);
+    const dbPath = `/uploads/${fileName}`;
+
+    // Move the file
+    await imageFile.mv(uploadPath);
+
+    // Update user record
+    const user = await this.findById(userId);
+    if (!user) {
+      throw new Error("User not found.");
+    }
+
+    user.profilePic = dbPath;
+    await user.save();
+
+    return dbPath;
+  }
+
 };
 
 module.exports = userService;

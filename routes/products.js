@@ -4,8 +4,12 @@ const jwtService = require("../service/jwtService");
 const router = express.Router();
 
 router.post("/addProduct", async (req, res) => {
-  const { productData, additionalData } = req.body;
+  // const { productData, additionalData } = req.body;
+  const imageFile = req.files?.picture;
   const authHeader = req.headers.authorization;
+
+  const productData = JSON.parse(req.body.productData);
+    const additionalData = JSON.parse(req.body.additionalData);
 
   if (!authHeader) {
     return res.status(401).json({ message: "Missing Authorization header" });
@@ -18,7 +22,7 @@ router.post("/addProduct", async (req, res) => {
 
   try {
     const decoded = jwtService.verifyToken(token);
-    const product = await productService.addProduct(decoded.userId, productData, additionalData);
+    const product = await productService.addProduct(decoded.userId, productData, additionalData,imageFile);
     res.status(200).json({ message: "Product added successfully", product });
   } catch (error) {
     console.error("Add product error:", error.message);
@@ -66,6 +70,29 @@ router.get("/getAllProduct", async (req, res) => {
   } catch (error) {
     console.error("Get all products error:", error.message);
     res.status(500).json({ error: "Failed to get product." });
+  }
+});
+
+router.post('/upload-product-pic', async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader?.startsWith("Bearer ")) {
+      return res.status(401).json({ error: "Missing or malformed token." });
+    }
+
+    const token = authHeader.split(" ")[1];
+    const decoded = jwtService.verifyToken(token);
+    const userId = decoded.userId;
+
+    const imageFile = req.files?.productPic;
+    console.log("req.files:", req.files);
+
+    const dbPath = await productService.uploadProductPicture(userId, imageFile);
+
+    res.status(200).json({ message: "Product picture uploaded successfully.", path: dbPath });
+  } catch (err) {
+    console.error("Upload error:", err);
+    res.status(400).json({ error: err.message });
   }
 });
 
