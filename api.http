@@ -1,4 +1,4 @@
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc1MDEwMjg4Nn0.rdQ9LzEMpcDwsIKrmn3TLpMKWAjGNCPIsARbUCu4u98
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc1MDEwNDYxNn0.fWUkSZkWTdMPfi7_vN9h3fh-mtCEajLies76XNrJQnY
 ### Create a new user
 POST http://localhost:4000/signup
 Content-Type: application/json
@@ -106,5 +106,17 @@ Content-Type: application/json
       "batteryType": "Lithium",
       "batterySize": 1
     }
+  }
+}
+
+### Add new link
+POST http://localhost:4000/addLinks
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "linkInfo": {
+    "linkName": "My GitHub",
+    "link": "https://github.com/myusername"
   }
 }
