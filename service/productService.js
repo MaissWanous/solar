@@ -253,7 +253,101 @@ async addProduct(userId, productData, additionalData, imageFile) {
         error: err.message
       };
     }
-  }
+  },
+  async editProduct(userId, editProductData) {
+    const userShop = await shop.findOne({
+      where: { shopKeeperId: userId },
+    });
+
+    try {
+      const existingProduct = await products.findOne({
+        where: { productId: editProductData.productId, shopId: userShop.shopId },
+      });
+
+      if (!existingProduct) {
+        throw new Error(
+          "Product not found or you don't have permission to edit it"
+        );
+      }
+
+      // تحديث المنتج الرئيسي
+      await products.update(
+        {
+          name: editProductData.name,
+          price: editProductData.price,
+          category: editProductData.category,
+          picture: editProductData.picture,
+          shopId: editProductData.shopId,
+        },
+        {
+          where: { productId: editProductData.productId },
+        }
+      );
+
+      // تحديث inverter إذا وجد
+      if (editProductData.inverter) {
+        await inverter.update(
+          {
+            inverterRatingP: editProductData.inverter.inverterRatingP,
+            maxAc: editProductData.inverter.maxAc,
+            defaultAc: editProductData.inverter.defaultAc,
+            solarRatingP: editProductData.inverter.solarRatingP,
+            maxSolarVolt: editProductData.inverter.maxSolarVolt,
+            Mppt: editProductData.inverter.Mppt,
+          },
+          {
+            where: { productId: editProductData.productId },
+          }
+        );
+      }
+
+      // تحديث solar_panel إذا وجد
+      if (editProductData.solar_panel) {
+        await solar_panel.update(
+          {
+            maximumPower: editProductData.solar_panel.maximumPower,
+            shortCurrent: editProductData.solar_panel.shortCurrent,
+            openVoltage: editProductData.solar_panel.openVoltage,
+          },
+          {
+            where: { productId: editProductData.productId },
+          }
+        );
+      }
+
+      // تحديث battery إذا وجد
+      if (editProductData.battery) {
+        await battery.update(
+          {
+            batteryType: editProductData.battery.batteryType,
+            batterySize: editProductData.battery.batterySize,
+          },
+          {
+            where: { productId: editProductData.productId },
+          }
+        );
+      }
+
+      const updatedProduct = await products.findOne({
+        where: { productId: editProductData.productId },
+        include: [
+          { model: inverter },
+          { model: solar_panel },
+          { model: battery },
+          { model: shop },
+        ],
+      });
+
+      return {
+        success: true,
+        message: "Product updated successfully",
+        product: updatedProduct,
+      };
+    } catch (error) {
+      console.error("Error editing product:", error);
+      throw new Error("Failed to edit product: " + error.message);
+    }
+  },
 };
 
 module.exports = productService;

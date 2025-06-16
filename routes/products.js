@@ -95,5 +95,28 @@ router.post('/upload-product-pic', async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 });
+router.put("/editProduct",async(req,res)=>{
+   const { editProductData } = req.body;
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader) {
+    return res.status(401).json({ message: "Missing Authorization header" });
+  }
+
+  const token = authHeader.split(" ")[1];
+  if (!token) {
+    return res.status(401).json({ message: "Invalid token format" });
+  }
+
+  try{
+     const decoded = jwtService.verifyToken(token);
+     
+    const product = await productService.editProduct(decoded.userId, editProductData);
+     res.status(200).json({ message: "Product edited successfully", product });
+  }catch(error){
+ console.error("alter my products error:", error.message);
+    res.status(500).json({ error: "Failed to edit product." });
+  }
+})
 
 module.exports = router;
