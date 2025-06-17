@@ -77,10 +77,12 @@ io.on('connection', (socket) => {
 const userRoutes = require("./routes/user");
 const productRoutes = require("./routes/products");
 const chatRoutes = require("./routes/chat");
+const solarRoutes =require("./routes/solar")
 
 app.use("/", userRoutes);
 app.use("/", productRoutes);
 app.use("/", chatRoutes);
+app.use("/",solarRoutes);
 
 // Start server
 db.sequelize.sync().then(() => {

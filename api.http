@@ -52,6 +52,21 @@ Content-Type: application/json
     "batterySize":"55"
   }
 }
+
+### Update battery
+put http://localhost:4000/updateProduct/4
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "productData":{
+    "category":"battery"
+  },
+  "additionalData":{
+    "batteryType":"3",
+    "batterySize":"77"
+  }
+}
 ###add inverter
 POST http://localhost:4000/addProduct
 Authorization: Bearer {{token}}

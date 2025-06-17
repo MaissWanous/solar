@@ -29,7 +29,33 @@ router.post("/addProduct", async (req, res) => {
     res.status(500).json({ error: error.message || "Failed to add product." });
   }
 });
+router.put("/updateProduct/:productId", async (req, res) => {
+  const { productData, additionalData } = req.body;
+  const productId = parseInt(req.params.productId);
+  const imageFile = req.files?.picture;
+  const authHeader = req.headers.authorization;
 
+  // const productData = JSON.parse(req.body.productData);
+  //   const additionalData = JSON.parse(req.body.additionalData);
+
+  if (!authHeader) {
+    return res.status(401).json({ message: "Missing Authorization header" });
+  }
+
+  const token = authHeader.split(" ")[1];
+  if (!token) {
+    return res.status(401).json({ message: "Invalid token format" });
+  }
+
+  try {
+    const decoded = jwtService.verifyToken(token);
+    const product = await productService.updateProduct(productId, productData, additionalData,imageFile);
+    res.status(200).json({ message: "Product update successfully", product });
+  } catch (error) {
+    console.error("Add product error:", error.message);
+    res.status(500).json({ error: error.message || "Failed to add product." });
+  }
+});
 router.get("/getMyProduct", async (req, res) => {
   const authHeader = req.headers.authorization;
 
@@ -44,7 +70,6 @@ router.get("/getMyProduct", async (req, res) => {
 
   try {
     const decoded = jwtService.verifyToken(token);
-    console.log(decoded.userId)
     const result = await productService.getMyProduct(decoded.userId);
 
     if (!result.success) {
