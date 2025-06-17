@@ -1,5 +1,5 @@
 // service/userService.js
-const { account, shop } = require("../models");
+const { links,account, shop } = require("../models");
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const path = require('path');
@@ -144,7 +144,37 @@ const userService = {
     await user.save();
 
     return dbPath;
-  }
+  },
+  async addLink(userId, linkInfo) {
+    try {
+    
+        const user = await account.findOne({
+            where: { accountId: userId },
+        });
+
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        
+        const newLink = await links.create({
+            linkUserId: userId, 
+            linkName: linkInfo.linkName,
+            link: linkInfo.link
+        });
+
+        
+        return {
+            success: true,
+            message: 'Link added successfully',
+            link: newLink
+        };
+        
+    } catch (error) {
+        console.error('Error adding link:', error);
+        throw error; 
+    }
+}
 
 };
 

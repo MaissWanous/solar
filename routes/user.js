@@ -6,7 +6,7 @@ const jwtService = require("../service/jwtService");
 
 router.use(express.json());
 
-// In-memory temporary store 
+// In-memory temporary store
 const tempStore = {};
 
 /**
@@ -18,13 +18,24 @@ router.post("/signup", async (req, res) => {
   try {
     // Check user data and send code
     const { checkCode, userData } = await userService.prepareSignup({
-      Fname, Lname, phone, email, password, country, type,
+      Fname,
+      Lname,
+      phone,
+      email,
+      password,
+      country,
+      type,
     });
 
-    // Store temporarily 
+    // Store temporarily
     tempStore[email] = { userData, checkCode };
 
-    res.status(200).json({ message: "Signup initiated. Check your email for the verification code." });
+    res
+      .status(200)
+      .json({
+        message:
+          "Signup initiated. Check your email for the verification code.",
+      });
   } catch (error) {
     console.error("Signup error:", error);
     res.status(400).json({ error: error.message });
@@ -38,7 +49,10 @@ router.post("/verify", async (req, res) => {
   const { email, checkCode } = req.body;
 
   try {
-    const { createdUser, rawPassword } = await userService.completeSignup(email, checkCode);
+    const { createdUser, rawPassword } = await userService.completeSignup(
+      email,
+      checkCode
+    );
     const token = await authService.login(email, rawPassword); // use original password
     res.status(201).json({ message: "Signup completed successfully.", token });
   } catch (error) {
@@ -49,7 +63,7 @@ router.post("/verify", async (req, res) => {
 /**
  * upload profile picture
  */
-router.post('/upload-profile-pic', async (req, res) => {
+router.post("/upload-profile-pic", async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader?.startsWith("Bearer ")) {
@@ -66,7 +80,12 @@ router.post('/upload-profile-pic', async (req, res) => {
 
     const dbPath = await userService.uploadProfilePicture(userId, imageFile);
 
-    res.status(200).json({ message: "Profile picture uploaded successfully.", path: dbPath });
+    res
+      .status(200)
+      .json({
+        message: "Profile picture uploaded successfully.",
+        path: dbPath,
+      });
   } catch (err) {
     console.error("Upload error:", err);
     res.status(400).json({ error: err.message });
@@ -147,6 +166,26 @@ router.get("/profile", async (req, res) => {
   try {
     const decoded = jwtService.verifyToken(token);
     const user = await userService.findById(decoded.userId);
+
+    if (!user) return res.status(404).json({ error: "User not found." });
+
+    res.status(200).json({ user });
+  } catch (error) {
+    console.error("Profile error:", error);
+    res.status(401).json({ error: "Unauthorized access." });
+  }
+});
+router.post("/addLinks", async (req, res) => {
+  const {  linkInfo } = req.body;
+  const authHeader = req.headers.authorization;
+  if (!authHeader?.startsWith("Bearer ")) {
+    return res.status(401).json({ error: "Missing or malformed token." });
+  }
+
+  const token = authHeader.split(" ")[1];
+  try {
+    const decoded = jwtService.verifyToken(token);
+    const user = await userService.addLink(decoded.userId, linkInfo);
 
     if (!user) return res.status(404).json({ error: "User not found." });
 

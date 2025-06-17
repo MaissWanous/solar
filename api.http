@@ -1,4 +1,4 @@
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsImlhdCI6MTc0OTc2MzAzNX0.URiPjUXvmDRIH0q2AoXL30x4M8Z6ffUKvuoXhVSC3BQ
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc1MDEwNDYxNn0.fWUkSZkWTdMPfi7_vN9h3fh-mtCEajLies76XNrJQnY
 ### Create a new user
 POST http://localhost:4000/signup
 Content-Type: application/json
@@ -103,3 +103,35 @@ Content-Type: application/json
 ### Fetch chat messages
 GET http://localhost:4000/chat/2
 Authorization: Bearer {{token}}
+
+###edit product
+PUT http://localhost:4000/editProduct
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "editProductData": {
+    "productId": 8,
+    "name": "New Product",
+    "price": 55,
+    "category": "New Category",
+    "picture": "new_image_path.jpg",
+    "shopId": 2,
+    "battery": {
+      "batteryType": "Lithium",
+      "batterySize": 1
+    }
+  }
+}
+
+### Add new link
+POST http://localhost:4000/addLinks
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "linkInfo": {
+    "linkName": "My GitHub",
+    "link": "https://github.com/myusername"
+  }
+}
