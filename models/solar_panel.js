@@ -10,8 +10,8 @@ module.exports = (sequelize, DataTypes) => {
         }
       },
       maximumPower: DataTypes.INTEGER,
-      shortCurrent: DataTypes.INTEGER,
-      openVoltage: DataTypes.INTEGER
+      shortCurrent: DataTypes.FLOAT,
+      openVoltage: DataTypes.FLOAT
     }
   );
 

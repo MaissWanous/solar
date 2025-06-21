@@ -131,7 +131,22 @@ Content-Type: application/json
 
 {
   "linkInfo": {
-    "linkName": "My GitHub",
+    "linkName": "GitHub",
     "link": "https://github.com/myusername"
   }
 }
+
+### Estimate Solar Energy
+POST http://127.0.0.1:8000/estimate_energy
+Content-Type: application/json
+
+{
+  "latitude": 33.5138,
+  "longitude": 36.2765,
+  "efficiency": 0.20,
+  "area": 1.6,
+  "system_losses": 0.15,
+  "start_date": "2025-06-01",
+  "end_date": "2025-06-03"
+}
+
