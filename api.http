@@ -104,26 +104,6 @@ Content-Type: application/json
 GET http://localhost:4000/chat/2
 Authorization: Bearer {{token}}
 
-###edit product
-PUT http://localhost:4000/editProduct
-Authorization: Bearer {{token}}
-Content-Type: application/json
-
-{
-  "editProductData": {
-    "productId": 8,
-    "name": "New Product",
-    "price": 55,
-    "category": "New Category",
-    "picture": "new_image_path.jpg",
-    "shopId": 2,
-    "battery": {
-      "batteryType": "Lithium",
-      "batterySize": 1
-    }
-  }
-}
-
 ### Add new link
 POST http://localhost:4000/addLinks
 Authorization: Bearer {{token}}
@@ -145,8 +125,8 @@ Content-Type: application/json
   "longitude": 36.2765,
   "efficiency": 0.20,
   "area": 1.6,
-  "system_losses": 0.15,
-  "start_date": "2025-06-01",
-  "end_date": "2025-06-03"
+  "system_losses": 0.25,
+  "start_date": "2026-12-01",
+  "end_date": "2026-12-03"
 }
 

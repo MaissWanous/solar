@@ -12,7 +12,7 @@ class SolarInput(BaseModel):
     longitude: float = Field(..., example=36.2765)
     efficiency: float = Field(..., example=0.20, ge=0, le=1)
     area: float = Field(..., example=1.6)
-    system_losses: float = Field(..., example=0.15, ge=0, le=1)
+    system_losses: float = Field(..., example=0.25, ge=0, le=1)
     start_date: str = Field(..., example="2025-06-01")
     end_date: str = Field(..., example="2025-06-03")
 
