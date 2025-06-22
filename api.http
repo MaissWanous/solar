@@ -129,4 +129,16 @@ Content-Type: application/json
   "start_date": "2026-12-01",
   "end_date": "2026-12-03"
 }
+###solarSupplies
+POST http://localhost:4000/solarSupplies
+Content-Type: application/json
 
+{
+  "latitude": 25.276987,
+  "longitude": 55.296249,
+  "solarPanel": 450,
+  "numNight": 2,
+  "eDay": 5,
+  "eNight": 3,
+  "batteryType": "tubular"
+}
