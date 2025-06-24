@@ -1,12 +1,13 @@
 module.exports = (sequelize, DataTypes) => {
     const account = require("./account")(sequelize, DataTypes); 
+    const products = require("./products")(sequelize, DataTypes); 
     const rating = sequelize.define('rating', {
        
-        factorId: {
+        productId: {
             type: DataTypes.INTEGER,
             references: {
-                model: account, // Reference the imported account model
-                key: 'accountId' // Foreign key in the account table
+                model: products, // Reference the imported products model
+                key: 'productId' // Foreign key in the products table
             }
         },
         customerId: {
@@ -16,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
                 key: 'accountId' // Foreign key in the account table
             }
         },
-        rating: {
+        review: {
             type: DataTypes.STRING
         },
         stars: {

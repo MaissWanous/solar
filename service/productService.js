@@ -5,6 +5,8 @@ const {
   products,
   shop,
   sequelize,
+  account,
+  rating
 } = require("../models");
 const path = require('path');
 const fs = require('fs');
@@ -359,6 +361,38 @@ const productService = {
         error: err.message
       };
     }
+  },
+  async addReview(userId,review){
+    try {
+    
+        const user = await account.findOne({
+            where: { accountId: userId },
+        });
+
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        
+        const Review = await rating .create({
+            customerId: userId, 
+            productId: review.productId,
+           review: review.review,
+           stars:review.stars
+        });
+
+        
+        return {
+            success: true,
+            message: 'review added successfully',
+            review:Review
+        };
+        
+    } catch (error) {
+        console.error('Error :', error);
+        throw error; 
+    }
+
   }
 };
 
