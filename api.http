@@ -115,6 +115,17 @@ Content-Type: application/json
       "openVoltage":
   }
 }
+### Add Review
+POST http://localhost:4000/addReview
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "productId": 8,
+  "review": "This product is great!",
+  "stars": 5
+}
+
 ###test add product with picture in cmd 
 curl -X POST http://localhost:4000/addProduct ^
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsImlhdCI6MTc0OTc2MzAzNX0.URiPjUXvmDRIH0q2AoXL30x4M8Z6ffUKvuoXhVSC3BQ" ^
@@ -174,13 +185,11 @@ Content-Type: application/json
   "eNight": 3,
   "batteryType": "tubular"
 }
-### Add Review
-POST http://localhost:4000/addReview
-Authorization: Bearer {{token}}
+###Solar Panel Orientation
+POST http://localhost:4000/SolarPanelOrientation
 Content-Type: application/json
 
 {
-  "productId": 8,
-  "review": "This product is great!",
-  "stars": 5
+  "latitude": 25.276987,
+  "longitude": 55.296249
 }

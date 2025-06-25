@@ -103,7 +103,21 @@ const solarService = {
         solarPanels
       }
     };
+  },
+  async  getSolarPanelOrientation(latitude, longitude) {
+      // Basic rule: tilt ≈ latitude
+    const tilt = Math.floor(Math.abs(latitude)); 
+
+
+    // Azimuth: South-facing in Northern hemisphere, North-facing in Southern
+    const azimuth = latitude >= 0 ? "South" : "North";
+
+    return {
+        azimuth: azimuth,     // In degrees: 0 = North, 180 = South
+        tilt: tilt            // In degrees from horizontal
+    };
   }
+
 };
 
 module.exports = solarService;

@@ -13,5 +13,16 @@ router.post('/solarSupplies', async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 });
+router.post('/SolarPanelOrientation',async(req,res)=>{
+  try {
+   const {latitude, longitude} = req.body;
+   const response = await solarService.getSolarPanelOrientation(latitude, longitude)
+  
+   res.status(200).json({  data:response });
+  } catch (err) {
+    console.error("Error:", err);
+    res.status(400).json({ error: err.message });
+  }
+})
 
 module.exports = router;
