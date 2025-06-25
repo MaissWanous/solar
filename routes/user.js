@@ -113,7 +113,7 @@ router.post("/login", async (req, res) => {
 /**
  * Forget Password - Send reset code
  */
-router.post("/forgot-password", async (req, res) => {
+router.post("/forget-password", async (req, res) => {
   const { email } = req.body;
 
   try {
@@ -122,6 +122,7 @@ router.post("/forgot-password", async (req, res) => {
 
     const code = await userService.sendCode(email);
     tempStore[email] = { resetCode: code };
+    console.log(code)
 
     res.status(200).json({ message: "Reset code sent to your email." });
   } catch (error) {

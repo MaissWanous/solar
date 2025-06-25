@@ -31,6 +31,24 @@ Content-Type: application/json
   "password": "1234"
 }
 
+### forget password
+POST http://localhost:4000/forget-password
+Content-Type: application/json
+
+{
+  "email": "whiteocjd@gmail.com"
+}
+
+### Reset-password
+POST http://localhost:4000/reset-password
+Content-Type: application/json
+
+{
+  "email": "whiteocjd@gmail.com",
+  "newPassword":"1244",
+  "resetCode":0
+}
+
 ### Get profile
 GET http://localhost:4000/profile
 Authorization: Bearer {{token}}
@@ -160,6 +178,7 @@ Content-Type: application/json
 }
 
 ### Estimate Solar Energy
+#uvicorn solar_api:app --reload بستخدم هي التعليمة لشغل هي 
 POST http://127.0.0.1:8000/estimate_energy
 Content-Type: application/json
 
@@ -170,7 +189,7 @@ Content-Type: application/json
   "area": 1.6,
   "system_losses": 0.25,
   "start_date": "2026-12-01",
-  "end_date": "2026-12-03"
+  "end_date": "2026-12-01"
 }
 ###solarSupplies
 POST http://localhost:4000/solarSupplies
