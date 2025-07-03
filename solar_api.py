@@ -10,9 +10,9 @@ app = FastAPI()
 class SolarInput(BaseModel):
     latitude: float = Field(..., example=33.5138)  # Damascus
     longitude: float = Field(..., example=36.2765)
-    efficiency: float = Field(..., example=0.20, ge=0, le=1)
+    efficiency: float = 0.20
     area: float = Field(..., example=1.6)
-    system_losses: float = Field(..., example=0.25, ge=0, le=1)
+    system_losses: float = 0.25
     start_date: str = Field(..., example="2025-06-01")
     end_date: str = Field(..., example="2025-06-03")
 
