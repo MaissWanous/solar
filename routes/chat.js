@@ -27,7 +27,7 @@ router.get("/chats", async (req, res) => {
     const decoded = jwtService.verifyToken(token);
     const userId = decoded.userId;
 
-    const messages = await chatService.getMessages(userId);
+    const messages = await chatService.getLastMessages(userId);
     res.status(200).json({ messages });
   } catch (error) {
     console.error("Chat fetch error:", error);

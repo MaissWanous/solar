@@ -2,7 +2,7 @@ const { io } = require("socket.io-client");
 
 // Set these before testing
 const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0OTk5NDUxN30.zf9nmfoJD7Rpz8oKvv-8v0jjDr1x1hjv1Hhqi0krZo4";
-const toUserId = 5; // Receiver's userId
+const toUserId = 4; // Receiver's userId
 const message = "Hii I'm user with id = 2";
 
 const socket = io("http://localhost:4000", {
