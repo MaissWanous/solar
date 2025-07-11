@@ -1,4 +1,4 @@
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc1MDEwNDYxNn0.fWUkSZkWTdMPfi7_vN9h3fh-mtCEajLies76XNrJQnY
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsImlhdCI6MTc1MjE3OTk3OSwiZXhwIjoxNzUyMTgwMTU5fQ.TyCz-0tfTRSZ1VtkcG_Yxe-XtrWDnhi3ccaXFt2PRHQ
 ### Create a new user
 POST http://localhost:4000/signup
 Content-Type: application/json
@@ -28,8 +28,13 @@ Content-Type: application/json
 
 {
   "email": "whiteocjd@gmail.com",
-  "password": "1234"
+  "password": "1244"
 }
+
+###get refresh token
+GET  http://localhost:4000/refresh
+Authorization: Bearer {{token}}
+Content-Type: application/json
 
 ### forget password
 POST http://localhost:4000/forget-password

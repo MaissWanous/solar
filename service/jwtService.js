@@ -3,11 +3,22 @@ const config = require('../config/config.json');
 
 class JwtService {
     generateToken(user) {
-        return jwt.sign(user, config.jwtSecret);
+        const accessToken = jwt.sign(user, config.jwtSecret, { expiresIn: '3h' });
+
+        const refreshToken = jwt.sign(user, config.jwtSecret, { expiresIn: '3m' });
+        return { accessToken, refreshToken };
     }
 
     verifyToken(token) {
-        return jwt.verify(token, config.jwtSecret);
+        try {
+            return jwt.verify(token, config.jwtSecret);
+        } catch (error) {
+            if (error instanceof jwt.TokenExpiredError) {
+                throw new Error('Token has expired');
+            } else {
+                throw new Error('Invalid token');
+            }
+        }
     }
 }
 

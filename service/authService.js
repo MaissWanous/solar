@@ -4,9 +4,9 @@ const userService = require('./userService');
 async function login(email, password) {
     try {
         const user = await userService.login({ email, password });
-      
+
         let token;
-        if ( user.user) {
+        if (user.user) {
 
             token = jwtService.generateToken({ userId: user.user.accountId });
 
@@ -19,5 +19,17 @@ async function login(email, password) {
     }
 }
 
+async function refreshToken(user) {
+    try {
 
-module.exports = { login };
+        token = jwtService.generateToken({ userId: user });
+
+        return ({ token: token, message: "ok" })
+    } catch (error) {
+        console.error("Error generating token:", error);
+        return { token: null, message: "Failed to refresh token." };
+    }
+}
+
+
+module.exports = { login, refreshToken };

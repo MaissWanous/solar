@@ -96,17 +96,20 @@ router.post("/upload-profile-pic", async (req, res) => {
  */
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
-
   try {
-    const token = await authService.login(email, password);
-    if (token.token === 0) {
-      return res.status(401).json({ error: token.message });
+    const Check =await userService.login({email,password})
+    if (Check) {
+      const token = await authService.login(email, password);
+      if (token.token === 0) {
+        return res.status(401).json({ error: token.message });
+      }
+  
+      res.status(200).json({ token: token.token, message: token.message });
+      
     }
-
-    res.status(200).json({ token: token.token, message: token.message });
   } catch (error) {
     console.error("Login error:", error);
-    res.status(500).json({ error: "Failed to log in." });
+    res.status(500).json({ error: error.message||"Failed to log in." });
   }
 });
 
@@ -177,7 +180,7 @@ router.get("/profile", async (req, res) => {
   }
 });
 router.post("/addLinks", async (req, res) => {
-  const {  linkInfo } = req.body;
+  const { linkInfo } = req.body;
   const authHeader = req.headers.authorization;
   if (!authHeader?.startsWith("Bearer ")) {
     return res.status(401).json({ error: "Missing or malformed token." });
@@ -196,5 +199,26 @@ router.post("/addLinks", async (req, res) => {
     res.status(401).json({ error: "Unauthorized access." });
   }
 });
+// get refresh token
+router.get("/refresh", async (req, res) => {
 
+  const authHeader = req.headers.authorization;
+  if (!authHeader?.startsWith("Bearer ")) {
+    return res.status(401).json({ error: "Missing or malformed token." });
+  }
+
+  try {
+    const token = authHeader.split(" ")[1];
+    const decoded = jwtService.verifyToken(token);
+    const newtoken = await authService.refreshToken(decoded.userId);
+    res.status(200).json({ token: newtoken.token, message: newtoken.message });
+
+    if (!user) return res.status(404).json({ error: "User not found." });
+
+    res.status(200).json({ user });
+  } catch (error) {
+    console.error("Profile error:", error);
+    res.status(401).json({ error: "Unauthorized access." });
+  }
+});
 module.exports = router;

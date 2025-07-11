@@ -12,10 +12,10 @@ const generateRandomCode = () => Math.floor(100000 + Math.random() * 900000);
 const userService = {
   async checkEmailExisting(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email.toLowerCase())) {
+    if (!emailRegex.test(email)) {
       throw new Error("Invalid email format.");
     }
-    return await account.findOne({ where: { email } });
+    return await account.findOne({ where: { email:email } });
   },
 
   async findById(id) {
@@ -87,16 +87,26 @@ const userService = {
     delete pendingUsers[email];
     return { createdUser, rawPassword: entry.rawPassword };
   },
-  async login({ email, password }) {
-    const user = await this.checkEmailExisting(email);
-    let message;
-    if (!user) message = "User not found";
+ async login({ email, password }) {
+    try {
+        const user = await this.checkEmailExisting(email);
+        
+        if (!user) {
+            throw new Error("User not found");
+        }
 
-    const valid = await bcrypt.compare(password, user.password);
-    if (!valid) message = "Incorrect password";
+        const isValidPassword = await bcrypt.compare(password, user.password);
+        
+        if (!isValidPassword) {
+            throw new Error("Incorrect password");
+        }
 
-    return { user, message };
-  },
+        return { user, message: "" };
+    } catch (error) {
+        throw new Error(error.message || "Login failed");
+    }
+}
+,
 
   async updatePassword(email, newPassword) {
     const user = await this.checkEmailExisting(email);
