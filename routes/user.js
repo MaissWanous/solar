@@ -97,19 +97,19 @@ router.post("/upload-profile-pic", async (req, res) => {
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {
-    const Check =await userService.login({email,password})
+    const Check = await userService.login({ email, password })
     if (Check) {
       const token = await authService.login(email, password);
       if (token.token === 0) {
         return res.status(401).json({ error: token.message });
       }
-  
+
       res.status(200).json({ token: token.token, message: token.message });
-      
+
     }
   } catch (error) {
     console.error("Login error:", error);
-    res.status(500).json({ error: error.message||"Failed to log in." });
+    res.status(500).json({ error: error.message || "Failed to log in." });
   }
 });
 
@@ -211,11 +211,15 @@ router.get("/refresh", async (req, res) => {
     const token = authHeader.split(" ")[1];
     const decoded = jwtService.verifyToken(token);
     const newtoken = await authService.refreshToken(decoded.userId);
-    res.status(200).json({ token: newtoken.token, message: newtoken.message });
+    const user = await userService.findById(decoded.userId);
 
     if (!user) return res.status(404).json({ error: "User not found." });
 
-    res.status(200).json({ user });
+    res.status(200).json({
+      token: newtoken.token,
+      message: newtoken.message
+    });
+
   } catch (error) {
     console.error("Profile error:", error);
     res.status(401).json({ error: "Unauthorized access." });
