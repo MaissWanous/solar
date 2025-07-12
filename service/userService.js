@@ -22,8 +22,8 @@ const userService = {
     return await account.findByPk(id);
   },
 
-  async sendCode(email) {
-    const confirmCode = 0;
+  async sendCode(email,checkCode) {
+    const confirmCode = checkCode;
     // generateRandomCode();
 
     try {
@@ -68,7 +68,7 @@ const userService = {
       rawPassword: userData.password
     };
 
-    await sendCode(userData.email, checkCode); // You must have sendCode()
+    await this.sendCode(userData.email, checkCode); 
 
     return { message: "Check your email for the verification code." };
   },
