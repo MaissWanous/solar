@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:udemy_flutter/layout/home_layout.dart';
 import 'package:udemy_flutter/modules/home/home_all_customer.dart';
 import 'package:udemy_flutter/modules/home/home_batteries_customer.dart';
 import 'package:udemy_flutter/modules/home/home_inverters_customer.dart';
+import 'package:udemy_flutter/modules/profile_shopkeeper_for_customer/Profile_Shopkeeper_All_For_Customer.dart';
 
 class Home_Solar_Panels_Customer extends StatefulWidget {
 
@@ -15,35 +17,12 @@ const Color off_white = Color(0xFFFDF7E8);
 class _Home_Solar_Panels_CustomerState extends State<Home_Solar_Panels_Customer> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Colors.white,
-        body: SafeArea(
+    return SafeArea(
         child: CustomScrollView(
-        slivers: [
-        SliverAppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        floating: true,
-        snap: true,
-        title:  Text(
-        'Home',
-        style: TextStyle(
-        color: yellow,
-        fontWeight: FontWeight.w800,
-    ),
-    ),
-    actions: [
-    IconButton(
-    onPressed: () {},
-    icon:  Icon(
-    Icons.search,
-    color: Colors.black
-    ),
-    ),
-    ],
-    ),
-    SliverPersistentHeader(
-    pinned: true,
+           slivers: [
+
+             SliverPersistentHeader(
+               pinned: true,
     floating: false,
     delegate: _ButtonBarDelegate(
     minHeight: 55,
@@ -59,25 +38,25 @@ class _Home_Solar_Panels_CustomerState extends State<Home_Solar_Panels_Customer>
     scrollDirection: Axis.horizontal,
     child: Row(
     children: [
-    _buildButton('All', off_white, Colors.black,context,Home_All_Customer()),
+    _buildButton('All', off_white, Colors.black,context,1),
     const SizedBox(width: 10),
-    _buildButton('Solar panels', yellow, Colors.white,context,Home_Solar_Panels_Customer()),
+    _buildButton('Solar panels', yellow, Colors.white,context,2),
     const SizedBox(width: 10),
-    _buildButton('Inverters', off_white, Colors.black,context,Home_Inverters_Customer()),
+    _buildButton('Inverters', off_white, Colors.black,context,3),
     const SizedBox(width: 10),
-    _buildButton('Batteries', off_white, Colors.black,context,Home_Batteries_Customer()),
+    _buildButton('Batteries', off_white, Colors.black,context,4),
     ],
     ),
     );
     }
-    else {
-    return Row(
+       else {
+          return Row(
     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
     children: [
-    _buildButton('All', off_white, Colors.black,context,Home_Inverters_Customer()),
-    _buildButton('Solar panels', yellow, Colors.white,context,Home_Solar_Panels_Customer()),
-    _buildButton('Inverters', off_white, Colors.black,context,Home_Inverters_Customer()),
-    _buildButton('Batteries', off_white, Colors.black,context,Home_Batteries_Customer()),
+    _buildButton('All', off_white, Colors.black,context,1),
+    _buildButton('Solar panels', yellow, Colors.white,context,2),
+    _buildButton('Inverters', off_white, Colors.black,context,3),
+    _buildButton('Batteries', off_white, Colors.black,context,4),
         ],
       );
     }
@@ -86,19 +65,23 @@ class _Home_Solar_Panels_CustomerState extends State<Home_Solar_Panels_Customer>
 ),
   ),
     ),
-    SliverPadding(
-    padding: const EdgeInsets.only(
-    top: 10.0,
+             SliverPadding(
+                padding: const EdgeInsets.only(
+        top: 10.0,
     right: 20.0,
     left: 20.0,
     ),
-    sliver: SliverList(
-    delegate: SliverChildBuilderDelegate(
-    (context, index) {
-    return Column(
-    children: [
+                  sliver: SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                     (context, index) {
+                     return Column(
+                       children: [
 
-      buildSolar_panelItem(),
+      buildSolar_panelItem(
+        context: context,
+        sellerName: 'Felicity',
+        imagePath: 'assetss/images/Peerson in working.png',
+      ),
       SizedBox(height: 12.0),
     ],
     );
@@ -108,10 +91,9 @@ class _Home_Solar_Panels_CustomerState extends State<Home_Solar_Panels_Customer>
     ),
 
     ),
-        ],
-        ),
-        ),
-    );
+            ],
+          ),
+        );
   }
 }
 
@@ -145,7 +127,7 @@ class _ButtonBarDelegate extends SliverPersistentHeaderDelegate {
   }
 }
 
-Widget _buildButton(String text, Color bg, Color txtColor, BuildContext context, Widget page) {
+Widget _buildButton(String text, Color bg, Color txtColor, BuildContext context, int tabIndex) {
   return Container(
     height: 25.0,
     decoration: BoxDecoration(
@@ -156,10 +138,11 @@ Widget _buildButton(String text, Color bg, Color txtColor, BuildContext context,
       minWidth: 0,
       padding: EdgeInsets.symmetric(horizontal: 14),
       onPressed: () {
-        Navigator.pushAndRemoveUntil(
+        Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => page),
-              (Route<dynamic> route) => false,
+          MaterialPageRoute(
+            builder: (context) => Home_Layout(startIndex: tabIndex),
+          ),
         );
       },
       child: Center(
@@ -172,146 +155,223 @@ Widget _buildButton(String text, Color bg, Color txtColor, BuildContext context,
     ),
   );
 }
-Widget buildSolar_panelItem() => Row(
-    children: [
-       Expanded(
-child: Container(
-decoration: BoxDecoration(
-    borderRadius: BorderRadius.circular(20.0),
-border: Border.all(color: yellow),
-),
-child: Padding(
-padding: const EdgeInsets.all(8.0),
-child: Column(
-crossAxisAlignment: CrossAxisAlignment.start,
-children: [
-Row(
-mainAxisAlignment: MainAxisAlignment.start,
-children: const [
-CircleAvatar(
-radius: 10.0,
-backgroundColor: Colors.cyan,
-),
-SizedBox(width: 5.0,),
-Text(
-'Felicity',
-style: TextStyle(
-fontWeight: FontWeight.w600,
-fontSize: 14.0,
-),
-),
-],
-),
-const SizedBox(height: 10.0, ),
-Center(
-child: Container(
-height: 150.0,
-decoration: BoxDecoration(
-borderRadius: BorderRadius.circular(20.0),
-color: Colors.cyan,
-),
-),
-),
-SizedBox(height: 10.0,),
-Text(
-'Solar panel',
-style: TextStyle(
-fontWeight: FontWeight.w600,
-),
-),
-Text(
-'250\$',
-style: TextStyle(
-color: yellow,
-fontSize: 14.0,
-),
-),
-Text(
-'Maximum power: 585 W',
-maxLines: 1,
-),
-Text(
-'Open circuit voltage: 50.2 V',
-),
- Text(
-'Short circuit current: 10.61 A',
-),
-  Text('                                '),
-  Text('                    '),
-],
-),
-),
-),
-),
-       SizedBox(width: 10.0,),
-       Expanded(
-child: Container(
-decoration: BoxDecoration(
-borderRadius: BorderRadius.circular(20.0),
-border: Border.all(color: yellow),
-),
-child: Padding(
-padding: const EdgeInsets.all(8.0),
-child: Column(
 
-  crossAxisAlignment: CrossAxisAlignment.start,
-  children: [
+Widget buildSolar_panelItem({
+  required BuildContext context,
+  required String sellerName,
+  required String imagePath,
+}) =>
     Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: const [
-        CircleAvatar(
-          radius: 10.0,
-          backgroundColor: Colors.cyan,
+      children: [
+        Expanded(
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20.0),
+              border: Border.all(color: yellow),
+            ),
+            child: Padding(
+              padding: EdgeInsets.all(5.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  Profile_Shopkeeper_SolarPanel_For_Customer(
+                                    sellerName: sellerName,
+                                  ),
+                            ),
+                          );
+                        },
+                        child: CircleAvatar(
+                          radius: 10.0,
+                          backgroundImage: AssetImage(imagePath),
+                        ),
+                      ),
+                      SizedBox(width: 5.0),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  Profile_Shopkeeper_SolarPanel_For_Customer(
+                                    sellerName: sellerName,
+                                  ),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          sellerName,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14.0,
+                          ),
+                        ),
+                      ),
+                      Spacer(),
+                      IconButton(
+                        icon: Icon(Icons.info_outline, size: 20.0),
+                        onPressed: () {},
+                        padding: EdgeInsets.zero,
+                        constraints: BoxConstraints(),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10.0),
+                  Center(
+                    child: Container(
+                      height: 150.0,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20.0),
+                        image: DecorationImage(
+                          image: AssetImage('assetss/images/Solar panel.png'),
+                          fit: BoxFit.fill,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10.0),
+                  Text('Solar panel',
+                      style: TextStyle(fontWeight: FontWeight.w600)),
+                  Text('250\$',
+                      style: TextStyle(color: yellow, fontSize: 14.0)),
+                  Text('Maximum power: 585 W', maxLines: 1),
+                  Text('Open circuit voltage: 50.21 V'),
+                  Text('Short circuit current: 10.61 A'),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 5.0),
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        minimumSize: Size(0, 0),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      onPressed: () {},
+                      child: Text(
+                        'Review',
+                        style: TextStyle(
+                          color: yellow,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
-        SizedBox(width: 5.0,),
-        Text(
-          'Felicity',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 14.0,
+        SizedBox(width: 10.0),
+        Expanded(
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20.0),
+              border: Border.all(color: yellow),
+            ),
+            child: Padding(
+              padding: EdgeInsets.all(5.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  Profile_Shopkeeper_SolarPanel_For_Customer(
+                                    sellerName: sellerName,
+                                  ),
+                            ),
+                          );
+                        },
+                        child: CircleAvatar(
+                          radius: 10.0,
+                          backgroundImage: AssetImage(imagePath),
+                        ),
+                      ),
+                      SizedBox(width: 5.0),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  Profile_Shopkeeper_SolarPanel_For_Customer(
+                                    sellerName: sellerName,
+                                  ),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          sellerName,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14.0,
+                          ),
+                        ),
+                      ),
+                      Spacer(),
+                      IconButton(
+                        icon: Icon(Icons.info_outline, size: 20.0),
+                        onPressed: () {},
+                        padding: EdgeInsets.zero,
+                        constraints: BoxConstraints(),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10.0),
+                  Center(
+                    child: Container(
+                      height: 150.0,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20.0),
+                        image: DecorationImage(
+                          image: AssetImage('assetss/images/Solar panel.png'),
+                          fit: BoxFit.fill,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10.0),
+                  Text('Solar panel',
+                      style: TextStyle(fontWeight: FontWeight.w600)),
+                  Text('250\$',
+                      style: TextStyle(color: yellow, fontSize: 14.0)),
+                  Text('Maximum power: 585 W', maxLines: 1),
+                  Text('Open circuit voltage: 50.21 V'),
+                  Text('Short circuit current: 10.61 A'),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 5.0),
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        minimumSize: Size(0, 0),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      onPressed: () {},
+                      child: Text(
+                        'Review',
+                        style: TextStyle(
+                          color: yellow,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ],
-    ),
-    const SizedBox(height: 10.0, ),
-    Center(
-      child: Container(
-        height: 150.0,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20.0),
-          color: Colors.cyan,
-        ),
-      ),
-    ),
-    SizedBox(height: 10.0,),
-    Text(
-      'Solar panel',
-      style: TextStyle(
-        fontWeight: FontWeight.w600,
-      ),
-    ),
-    Text(
-      '250\$',
-      style: TextStyle(
-        color: yellow,
-        fontSize: 14.0,
-      ),
-    ),
-    Text(
-      'Maximum power: 585 W',
-      maxLines: 1,
-    ),
-    Text(
-      'Open circuit voltage: 50.2 V',
-    ),
-    Text(
-      'Short circuit current: 10.61 A',
-    ),
-    Text('Helooooooodfgchjkl;sdfghjklsxdcfgbhj'),
-  ],
-),
-),
-),
-),
-    ],
-);
+    );
+

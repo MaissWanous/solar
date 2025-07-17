@@ -9,6 +9,7 @@ const Color moregrey=Color(0xFFB3B3B3);
 
 Widget defultButton ({
   double width = double.infinity,
+ // double heigght,
   required String text,
   required Function function,
   Color borderColor = yellow,
@@ -18,7 +19,7 @@ Widget defultButton ({
  =>Container(
   width: width,
   decoration: BoxDecoration(
-    borderRadius: BorderRadius.circular(10.0),
+    borderRadius: BorderRadius.circular(20.0),
     border:Border.all(color: borderColor),
     color: backgroundColor
   ),
@@ -43,44 +44,42 @@ Widget defaultFormField({
   bool isPassword=false,
   required String? Function(String?) validate,
   required String hint,
-  required IconData prefix,
-  suffix,
-}) => TextFormField(
-controller: controller,
-keyboardType: type,
-obscureText: isPassword,
-onFieldSubmitted: onSubmit,
-onChanged: onChange,
-validator: validate,
-decoration:InputDecoration(
-hintText: hint,
-hintStyle: TextStyle(
-  color: moregrey,
-),
-prefixIcon: Icon(
   prefix,
-  color:moregrey,
-),
- suffixIcon: suffix !=null  ? Icon(
-   suffix,
-   color:moregrey,
-) : null,
-border: OutlineInputBorder(
-borderRadius: BorderRadius.circular(20.0),
-borderSide: BorderSide(color: yellow),
-
-),
-  enabledBorder: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(20.0),
-    borderSide: BorderSide(color: yellow),
+  Color,
+  suffix,
+}) => Directionality(
+  textDirection: TextDirection.ltr,
+  child: TextFormField(
+    controller: controller,
+    keyboardType: type,
+    obscureText: isPassword,
+    onFieldSubmitted: onSubmit,
+    onChanged: onChange,
+    validator: validate,
+    textAlign: TextAlign.start,
+    decoration: InputDecoration(
+      hintText: hint,
+      hintStyle: TextStyle(
+        color: moregrey,
+        fontSize: 14,
+      ),
+      prefixIcon: prefix != null ? Icon(prefix, color: moregrey) : null,
+      suffixIcon: suffix != null ? Icon(suffix, color: moregrey) : null,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(20.0),
+        borderSide: BorderSide(color: yellow),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(20.0),
+        borderSide: BorderSide(color: yellow),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(20.0),
+        borderSide: BorderSide(color: yellow),
+      ),
+    ),
   ),
-  focusedBorder: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(20.0),
-    borderSide: BorderSide(color: yellow),
-  ),
-
-
-),
 );
+
 
 

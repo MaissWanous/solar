@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:udemy_flutter/modules/forgot_password/enter_new_password.dart';
+import 'package:udemy_flutter/modules/login/register_customer.dart';
+import 'package:udemy_flutter/modules/login/register_for_shopkeeper_1.dart';
 import 'package:udemy_flutter/shared/components/components.dart';
 
-class Enter_Verification_Code extends StatefulWidget {
+class Enter_Verification_Code_For_Register extends StatefulWidget {
+  final String selectedAccount;
+
+  const Enter_Verification_Code_For_Register({Key? key, required this.selectedAccount}) : super(key: key);
+
   @override
-  State<Enter_Verification_Code> createState() => _Enter_Verification_CodeState();
+  State<Enter_Verification_Code_For_Register> createState() => _Enter_Verification_Code_For_RegisterState();
 }
 
-class _Enter_Verification_CodeState extends State<Enter_Verification_Code> {
+class _Enter_Verification_Code_For_RegisterState extends State<Enter_Verification_Code_For_Register> {
   final Color yellow = const Color(0xFFFFBF00);
   final Color more2grey = const Color(0xFFA39F9F);
 
@@ -134,10 +140,18 @@ class _Enter_Verification_CodeState extends State<Enter_Verification_Code> {
                           ),
                         );
                       } else {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => Enter_New_Psssword()),
-                        );
+                        if (widget.selectedAccount == 'Customer') {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => Register_customer()),
+                          );
+                        }
+                        else if (widget.selectedAccount == 'Shopkeeper') {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => Register_for_shopkeeper1()),
+                          );
+                        }
                       }
                     },
                     backgroundColor: yellow,

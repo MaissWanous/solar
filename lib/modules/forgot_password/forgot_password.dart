@@ -4,35 +4,33 @@ import 'package:udemy_flutter/modules/forgot_password/enter_verification_code.da
 import 'package:udemy_flutter/shared/components/components.dart';
 
 class Forgot_Password extends StatelessWidget {
-
   final Color yellow = Color(0xFFFFBF00);
   final Color more2grey = Color(0xFFA39F9F);
-  final Color moregrey = Color(0xFFB3B3B3);
 
-  var emailController = TextEditingController();
-  var passwordController = TextEditingController();
-  var formKey = GlobalKey<FormState>();
+  final emailController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0.0,
         leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
           icon: Icon(
             Icons.keyboard_arrow_left,
-            size: 35,
+            size: screenWidth * 0.08,
             color: Colors.black,
           ),
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: EdgeInsets.all(screenWidth * 0.05),
         child: Form(
           key: formKey,
           child: Column(
@@ -45,71 +43,68 @@ class Forgot_Password extends StatelessWidget {
                       'Forgot password',
                       style: TextStyle(
                         fontFamily: 'Aclonica',
-                        fontSize: 24.0,
+                        fontSize: screenWidth * 0.06,
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
                       ),
                     ),
-                    SizedBox(height: 35.0),
+                    SizedBox(height: screenHeight * 0.04),
                     Container(
-                      width: 258,
+                      width: screenWidth * 0.75,
                       child: Text(
                         'Select which contact details should we use to reset your password.',
-                         style: TextStyle(
-                             fontSize: 14.0,
-                             color: more2grey,
-                         ),
+                        style: TextStyle(
+                          fontSize: screenWidth * 0.035,
+                          color: more2grey,
+                        ),
                       ),
                     ),
-                    SizedBox(height: 35.0),
+                    SizedBox(height: screenHeight * 0.04),
                     defaultFormField(
-                        controller: emailController,
-                        type: TextInputType.emailAddress,
-                        validate: (String? value){
-                          if (value == null || value.isEmpty) {
-                            return "First name must not empty";
-                          }
-                          else if (!isValidEmail(value)) {
-                            return "Please enter a valid email address";
-                          }
-                          return null;
-                        },
-                        hint: 'Email',
-                        prefix: Icons.email
+                      controller: emailController,
+                      type: TextInputType.emailAddress,
+                      validate: (String? value) {
+                        if (value == null || value.isEmpty) {
+                          return "First name must not be empty";
+                        } else if (!isValidEmail(value)) {
+                          return "Please enter a valid email address";
+                        }
+                        return null;
+                      },
+                      hint: 'Email',
+                      prefix: Icons.email,
                     ),
                   ],
                 ),
               ),
               defultButton(
-                  text: 'Continue',
-                  function: (){
-                    if(formKey.currentState?.validate() ?? false)
-                      {
-                         Navigator.push(
-                             context,
-                             MaterialPageRoute(
-                                 builder: (context)=>Enter_Verification_Code()
-                             ),
-                         );
-                      }
-                  },
+                text: 'Continue',
+                function: () {
+                  if (formKey.currentState?.validate() ?? false) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Enter_Verification_Code(),
+                      ),
+                    );
+                  }
+                },
                 backgroundColor: yellow,
                 borderColor: yellow,
                 textColor: Colors.white,
               ),
+              SizedBox(height: screenHeight * 0.02),
             ],
           ),
-
         ),
       ),
     );
   }
 }
 
-
 bool isValidEmail(String email) {
   final emailRegex = RegExp(
-    r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9]+\.com",
+    r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
   );
   return emailRegex.hasMatch(email);
 }

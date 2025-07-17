@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:udemy_flutter/modules/login/enter_verification_code_for_register.dart';
 import 'package:udemy_flutter/modules/login/register_customer.dart';
+import 'package:udemy_flutter/modules/login/register_for_shopkeeper_1.dart';
 import 'package:udemy_flutter/shared/components/components.dart';
 
 class Register extends StatefulWidget {
@@ -14,6 +16,7 @@ class _RegisterState extends State<Register> {
 
   var emailController = TextEditingController();
   var passwordController = TextEditingController();
+  var confirmpasswordController = TextEditingController();
   var formKey = GlobalKey<FormState>();
 
   String? selectedAccount;
@@ -44,6 +47,9 @@ class _RegisterState extends State<Register> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -55,13 +61,13 @@ class _RegisterState extends State<Register> {
           },
           icon: Icon(
             Icons.keyboard_arrow_left,
-            size: 35.0,
+            size: screenWidth * 0.09,
             color: Colors.black,
           ),
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
         child: Form(
           key: formKey,
           child: Column(
@@ -72,36 +78,41 @@ class _RegisterState extends State<Register> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        width: 200,
+                        width: screenWidth * 0.6,
                         child: RichText(
                           text: TextSpan(
                             style: TextStyle(
                               fontFamily: 'Aclonica',
-                              fontSize: 24.0,
+                              fontSize: screenWidth * 0.06,
                               fontWeight: FontWeight.bold,
                               color: Colors.black,
                             ),
                             children: [
                               TextSpan(text: 'Register Account To '),
-                              TextSpan(text: 'Solar Energy', style: TextStyle(color: yellow)),
+                              TextSpan(
+                                text: 'Solar Energy',
+                                style: TextStyle(color: yellow),
+                              ),
                             ],
                           ),
                         ),
                       ),
-                      SizedBox(height: 30.0),
+                      SizedBox(height: screenHeight * 0.03),
                       Text(
                         'Hello there, register to continue',
-                        style: TextStyle(fontSize: 14.0, color: more2grey),
+                        style: TextStyle(
+                          fontSize: screenWidth * 0.035,
+                          color: more2grey,
+                        ),
                       ),
-                      SizedBox(height: 30.0),
+                      SizedBox(height: screenHeight * 0.03),
                       defaultFormField(
                         controller: emailController,
                         type: TextInputType.emailAddress,
                         validate: (String? value) {
                           if (value == null || value.isEmpty) {
                             return "Email must not be empty";
-                          }
-                          else if (!isValidEmail(value)) {
+                          } else if (!isValidEmail(value)) {
                             return "Please enter a valid email address";
                           }
                           return null;
@@ -109,29 +120,31 @@ class _RegisterState extends State<Register> {
                         hint: 'Email',
                         prefix: Icons.email,
                       ),
-                      SizedBox(height: 25.0),
+                      SizedBox(height: screenHeight * 0.025),
                       defaultFormField(
                         controller: passwordController,
                         type: TextInputType.visiblePassword,
+                        hint: 'New Password',
                         validate: (String? value) {
                           if (value == null || value.isEmpty) {
-                            return "Password must not empty";
+                            return "New password must not be empty";
                           }
-
                           return null;
                         },
-                        hint: "Password",
                         prefix: Icons.lock,
                         suffix: Icons.remove_red_eye,
                         isPassword: true,
                       ),
-                      SizedBox(height: 25.0),
+                      SizedBox(height: screenHeight * 0.025),
                       defaultFormField(
-                        controller: passwordController,
+                        controller: confirmpasswordController,
                         type: TextInputType.visiblePassword,
                         validate: (String? value) {
                           if (value == null || value.isEmpty) {
-                            return "Confirm password must not empty";
+                            return "Confirm password must not be empty";
+                          }
+                          if (value != passwordController.text) {
+                            return "Confirm password does not match";
                           }
                           return null;
                         },
@@ -139,7 +152,7 @@ class _RegisterState extends State<Register> {
                         prefix: Icons.check_circle,
                         isPassword: true,
                       ),
-                      SizedBox(height: 35),
+                      SizedBox(height: screenHeight * 0.04),
                       Row(
                         children: [
                           Expanded(
@@ -147,12 +160,12 @@ class _RegisterState extends State<Register> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 buildCircle('Customer'),
-                                SizedBox(width: 9.0),
+                                SizedBox(width: screenWidth * 0.02),
                                 Text(
                                   'Customer',
                                   style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 14
+                                    color: Colors.black,
+                                    fontSize: screenWidth * 0.035,
                                   ),
                                 ),
                               ],
@@ -163,12 +176,13 @@ class _RegisterState extends State<Register> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 buildCircle('Shopkeeper'),
-                                SizedBox(width: 9),
+                                SizedBox(width: screenWidth * 0.02),
                                 Text(
                                   'Shopkeeper',
                                   style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 14),
+                                    color: Colors.black,
+                                    fontSize: screenWidth * 0.035,
+                                  ),
                                 ),
                               ],
                             ),
@@ -178,18 +192,17 @@ class _RegisterState extends State<Register> {
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 buildCircle('Technical'),
-                                SizedBox(width: 9),
+                                SizedBox(width: screenWidth * 0.02),
                                 Text(
                                   'Technical',
                                   style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 14.0
+                                    color: Colors.black,
+                                    fontSize: screenWidth * 0.035,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-
                         ],
                       ),
                     ],
@@ -200,21 +213,28 @@ class _RegisterState extends State<Register> {
                 text: 'Next',
                 function: () {
                   if (formKey.currentState?.validate() ?? false) {
-                    if (selectedAccount != null) {
-                     {
-                       if(selectedAccount=='Customer')
-                         {
-                           Navigator.push(
-                               context,
-                               MaterialPageRoute(
-                                   builder: (context)=>Register_customer(),
-                               ),
-                           );
-                         }
-
-                     }
-                    }
-                    else {
+                    if (selectedAccount == 'Customer') {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Enter_Verification_Code_For_Register(selectedAccount: 'Customer'),
+                        ),
+                      );
+                    } else if (selectedAccount == 'Shopkeeper') {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Enter_Verification_Code_For_Register(selectedAccount: 'Shopkeeper'),
+                        ),
+                      );
+                    } else if (selectedAccount == 'Technical') {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Enter_Verification_Code_For_Register(selectedAccount: 'Technical'),
+                        ),
+                      );
+                    } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text("Please select an account type."),
@@ -228,6 +248,8 @@ class _RegisterState extends State<Register> {
                 borderColor: yellow,
                 textColor: Colors.white,
               ),
+
+              SizedBox(height: screenHeight * 0.02),
             ],
           ),
         ),
@@ -238,10 +260,7 @@ class _RegisterState extends State<Register> {
 
 bool isValidEmail(String email) {
   final emailRegex = RegExp(
-    r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9]+\.com",
+    r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9]+\.(com|net|org)$",
   );
   return emailRegex.hasMatch(email);
 }
-
-
-
