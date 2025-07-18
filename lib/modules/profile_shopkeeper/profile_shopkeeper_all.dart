@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:udemy_flutter/layout/home_layout.dart';
 import 'package:udemy_flutter/layout/home_layout_shopkeeper.dart';
+import 'package:udemy_flutter/modules/add_product/add_anything.dart';
 import 'package:udemy_flutter/modules/add_product/add_battery.dart';
 import 'package:udemy_flutter/modules/add_product/add_inverter.dart';
 import 'package:udemy_flutter/modules/add_product/add_solarpanel.dart';
@@ -96,6 +97,22 @@ class _Profile_Shopkeeper_AllState extends State<Profile_Shopkeeper_All> {
                           buildBatteriesItem(context),
                       separatorBuilder: (context, index) =>
                           const SizedBox(width: 10.0),
+                      itemCount: 10,
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Text('Anything',
+                      style: TextStyle(fontWeight: FontWeight.w500)),
+                  SizedBox(height: 10),
+                  SizedBox(
+                    height: 265.0,
+                    width: double.infinity,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index) =>
+                          buildAnythingItem(context),
+                      separatorBuilder: (context, index) =>
+                      const SizedBox(width: 10.0),
                       itemCount: 10,
                     ),
                   ),
@@ -526,6 +543,9 @@ Widget buildBatteriesItem(BuildContext context) => Container(
             Text(
               'Battery Size: 200',
             ),
+            Text(
+              'Anything',
+            ),
             Padding(
               padding: EdgeInsets.fromLTRB(0.0, 5.0, 0.0, 0.0),
               child: TextButton(
@@ -548,6 +568,104 @@ Widget buildBatteriesItem(BuildContext context) => Container(
         ),
       ),
     );
+
+Widget buildAnythingItem(BuildContext context) => Container(
+  decoration: BoxDecoration(
+    borderRadius: BorderRadius.circular(20.0),
+    border: Border.all(color: yellow),
+  ),
+  child: Padding(
+    padding: const EdgeInsets.only(
+        top: 5.0, left: 10.0, right: 10.0, bottom: 5.0),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            CircleAvatar(radius: 10.0, backgroundColor: Colors.cyan),
+            SizedBox(width: 5.0),
+            Text('Felicity',
+                style:
+                TextStyle(fontWeight: FontWeight.w600, fontSize: 14.0)),
+            SizedBox(
+              width: 100.0,
+            ),
+            IconButton(
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => Add_Any_Thing()));
+              },
+              icon: Icon(
+                Icons.edit,
+                size: 20.0,
+              ),
+              padding: EdgeInsets.zero,
+              constraints: BoxConstraints(),
+            ),
+          ],
+        ),
+        SizedBox(height: 10.0),
+        Center(
+          child: Container(
+            height: 85.0,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20.0),
+              image: DecorationImage(
+                image: AssetImage('assets/images/my_image.png'),
+                fit: BoxFit.fill,
+              ),
+            ),
+          ),
+        ),
+        SizedBox(height: 30.0),
+        Text(
+          'Conductor',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        Text(
+          '1000\$',
+          style: TextStyle(
+            color: yellow,
+            fontSize: 14.0,
+          ),
+        ),
+        Text(
+          'Anything',
+          maxLines: 1,
+        ),
+        Text(
+          'Anything',
+          maxLines: 1,
+        ),
+        Text(
+          'Anything',
+          maxLines: 1,
+        ),
+        Padding(
+          padding: EdgeInsets.fromLTRB(0.0, 5.0, 0.0, 0.0),
+          child: TextButton(
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.zero,
+              minimumSize: Size(0, 0),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            onPressed: () {},
+            child: Text(
+              'Review',
+              style: TextStyle(
+                color: yellow,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+        ),
+      ],
+    ),
+  ),
+);
+
 
 class _CustomBottomSheet extends StatefulWidget {
   final List<String> options;

@@ -76,7 +76,8 @@ class _Home_Layout_ShopkeeperState extends State<Home_Layout_Shopkeeper> {
             if (isBottomSheetShown) {
               Navigator.pop(context);
               setState(() => isBottomSheetShown = false);
-            } else {
+            }
+            else {
               showModalBottomSheet(
                 context: context,
                 isScrollControlled: true,
@@ -94,6 +95,10 @@ class _Home_Layout_ShopkeeperState extends State<Home_Layout_Shopkeeper> {
             }
           },
         ),
+        IconButton(
+            onPressed: (){},
+            icon: Icon(Icons.notification_important, color: Colors.black),
+        )
       ]
           : [],
     );
