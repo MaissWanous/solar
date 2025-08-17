@@ -10,6 +10,7 @@ import 'package:udemy_flutter/modules/home/home_solar_panels_customer.dart';
 import 'package:udemy_flutter/modules/login/Register.dart';
 import 'package:udemy_flutter/modules/profile_customer/profile_customer.dart';
 import 'package:udemy_flutter/modules/profile_shopkeeper/profile_shopkeeper_all.dart';
+import 'package:udemy_flutter/modules/review/review.dart';
 
 
 void main() {

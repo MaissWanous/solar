@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:udemy_flutter/layout/home_layout.dart';
+import 'package:udemy_flutter/layout/home_layout_Technical.dart';
 import 'package:udemy_flutter/layout/home_layout_shopkeeper.dart';
 import 'package:udemy_flutter/modules/forgot_password/forgot_password.dart';
 import 'package:udemy_flutter/modules/login/Register.dart';
@@ -199,6 +200,12 @@ class _LoginState extends State<Login> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) => Home_Layout_Shopkeeper()),
+                          );
+                        }
+                        else if (selectedAccount == 'Technical') {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => Home_Layout_Technical()),
                           );
                         }
                       } else {
