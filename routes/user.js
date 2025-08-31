@@ -122,8 +122,9 @@ router.post("/forget-password", async (req, res) => {
   try {
     const user = await userService.checkEmailExisting(email);
     if (!user) return res.status(404).json({ error: "Email not found." });
-
+console.log("ffffffff")
     const code = await userService.sendCode(email);
+ console.log(code)
     tempStore[email] = { resetCode: code };
     console.log(code)
 

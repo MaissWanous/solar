@@ -2,4 +2,5 @@ node_modules/
 view/node_modules/
 .env
 ai code/Equal.csv
+ai code/balanced.csv
 AI

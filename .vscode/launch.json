@@ -1,0 +1,12 @@
+{
+    "configurations": [
+        
+
+        {
+            "type": "chrome",
+            "name": "https://l9vwjcs3-4000.uks1.devtunnels.ms/",
+            "request": "launch",
+            "url": "https://l9vwjcs3-4000.uks1.devtunnels.ms/"
+        }
+    ]
+}

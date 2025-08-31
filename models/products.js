@@ -30,7 +30,10 @@ module.exports = (sequelize, DataTypes) => {
     products.hasOne(models.solar_panel, {
       foreignKey: 'productId'
     });
-  };
-
+  
+  products.hasMany(models.rating, {
+    foreignKey: 'productId'
+  });
+};
   return products;
 };

@@ -22,30 +22,33 @@ const userService = {
     return await account.findByPk(id);
   },
 
-  async sendCode(email,checkCode) {
+  async sendCode(email) {
+       const checkCode = 0;
+    // Math.floor(100000 + Math.random() * 900000); // 6-digit code
+
     const confirmCode = checkCode;
     // generateRandomCode();
 
-    try {
-      const transporter = nodemailer.createTransport({
-        host: "smtp.elasticemail.com",
-        port: 2525,
-        auth: {
-          user: "whiteocjd@gmail.com",
-          pass: "70028532E494746FB9CD5CDA7519A033E123",
-        },
-      });
+    // try {
+    //   const transporter = nodemailer.createTransport({
+    //     host: "smtp.elasticemail.com",
+    //     port: 2525,
+    //     auth: {
+    //       user: "whiteocjd@gmail.com",
+    //       pass: "70028532E494746FB9CD5CDA7519A033E123",
+    //     },
+    //   });
 
-      await transporter.sendMail({
-        from: "whiteocjd@gmail.com",
-        to: email,
-        subject: "Email Confirmation",
-        html: `Use this verification code: <strong>${confirmCode}</strong>`,
-      });
-    } catch (error) {
-      console.error("Email send failed:", error);
-      throw new Error("Email sending failed");
-    }
+    //   await transporter.sendMail({
+    //     from: "whiteocjd@gmail.com",
+    //     to: email,
+    //     subject: "Email Confirmation",
+    //     html: `Use this verification code: <strong>${confirmCode}</strong>`,
+    //   });
+    // } catch (error) {
+    //   console.error("Email send failed:", error);
+    //   throw new Error("Email sending failed");
+    // }
 
     return confirmCode;
   },
@@ -55,9 +58,7 @@ const userService = {
     if (existing) throw new Error("Email already exists.");
 
     const hashedPassword = await bcrypt.hash(userData.password, 10);
-    const checkCode = 0;
-    // Math.floor(100000 + Math.random() * 900000); // 6-digit code
-
+ 
     // Save plain password for login after signup
     pendingUsers[userData.email] = {
       checkCode,
@@ -68,7 +69,7 @@ const userService = {
       rawPassword: userData.password
     };
 
-    await this.sendCode(userData.email, checkCode); 
+    await this.sendCode(userData.email); 
 
     return { message: "Check your email for the verification code." };
   },

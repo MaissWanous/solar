@@ -1,15 +1,15 @@
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsImlhdCI6MTc1MjE3OTk3OSwiZXhwIjoxNzUyMTgwMTU5fQ.TyCz-0tfTRSZ1VtkcG_Yxe-XtrWDnhi3ccaXFt2PRHQ
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsImlhdCI6MTc1NjQ2NTQzMSwiZXhwIjoxNzU2NDc2MjMxfQ.s7u9N4XFPXXLAtWs6BvWKMIXbKK5fjbfrW2MZsmkrH8
 ### Create a new user
-POST http://localhost:4000/signup
+POST https://l9vwjcs3-4000.uks1.devtunnels.ms/signup
 Content-Type: application/json
 
 {
   "Fname": "John Doe",
-  " Lname":,
-  " phone":,
+  " Lname":"",
+  " phone":"",
   "email": "whiteocjd@gmail.com",
   "password":"1234",
-  "country":,
+  "country":"",
   "type":"shopKeeper"
 }
 ###check code
@@ -28,7 +28,7 @@ Content-Type: application/json
 
 {
   "email": "whiteocjd@gmail.com",
-  "password": "1244"
+  "password": "1246"
 }
 
 ###get refresh token
@@ -50,7 +50,7 @@ Content-Type: application/json
 
 {
   "email": "whiteocjd@gmail.com",
-  "newPassword":"1244",
+  "newPassword":"1246",
   "resetCode":0
 }
 
@@ -144,8 +144,8 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "productId": 8,
-  "review": "This product is great!",
+  "productId": 4,
+  "review": "The instructions were confusing and the setup was a nightmare. Would not buy again.",
   "stars": 5
 }
 
@@ -167,7 +167,7 @@ Content-Type: application/json
 #   -F "profilePic=@profile.jpg"
 
 ### Fetch chat messages just between you and user 5
-GET http://localhost:4000/chat/5
+GET http://localhost:4000/chat/2
 Authorization: Bearer {{token}}
 
 ### Fetch chat messages
