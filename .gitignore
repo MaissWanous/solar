@@ -4,3 +4,4 @@ view/node_modules/
 ai code/Equal.csv
 ai code/balanced.csv
 AI
+rf_model.pkl
