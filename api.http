@@ -1,4 +1,4 @@
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsImlhdCI6MTc1NjQ2NTQzMSwiZXhwIjoxNzU2NDc2MjMxfQ.s7u9N4XFPXXLAtWs6BvWKMIXbKK5fjbfrW2MZsmkrH8
+@token =eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsImlhdCI6MTc1NjY2NzM2NCwiZXhwIjoxNzU2Njc4MTY0fQ.K5DwOC0k4e5FZChFZ4kP3dUqz8pTXXLi-J13Y0zPwvU
 ### Create a new user
 POST https://l9vwjcs3-4000.uks1.devtunnels.ms/signup
 Content-Type: application/json
@@ -64,11 +64,12 @@ GET http://localhost:4000/getMyProduct
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
+# product data same for all product
 ### Add battery
 POST http://localhost:4000/addProduct
 Authorization: Bearer {{token}}
 Content-Type: application/json
-# product data same for all product
+
 {
   "productData":{
     "category":"battery",
@@ -114,10 +115,10 @@ Content-Type: application/json
   "additionalData":{
     "inverterRatingP":"1",
       "maxAc": "2",
-      "defaultAc": ,
-      "solarRatingP": ,
-      "maxSolarVolt": ,
-      "Mppt": 
+      "defaultAc":"2" ,
+      "solarRatingP":"2" ,
+      "maxSolarVolt": "2",
+      "Mppt": "2"
   }
 }
 ### Add solar panel
@@ -127,15 +128,15 @@ Content-Type: application/json
 
 {
   "productData":{
-    "category":"solar panel",
+    "category":"solar_panel",
     "price":"100",
     "name": "solar panel"
 
   },
   "additionalData":{
-     "maximumPower": ,
-      "shortCurrent":,
-      "openVoltage":
+     "maximumPower":"2" ,
+      "shortCurrent":"2",
+      "openVoltage":"2"
   }
 }
 ### Add Review
