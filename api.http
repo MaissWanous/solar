@@ -206,7 +206,7 @@ Content-Type: application/json
   "latitude": 25.276987,
   "longitude": 55.296249,
   "solarPanel": 450,
-  "numNight": 2,
+  "numNight": 3,
   "eDay": 5,
   "eNight": 3,
   "batteryType": "tubular"
