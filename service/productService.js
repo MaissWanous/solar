@@ -1,3 +1,5 @@
+
+const axios = require("axios");
 const {
   battery,
   inverter,
@@ -103,7 +105,7 @@ const productService = {
   }
 
   ,
-  async updateProduct(productId,productData, additionalData, imageFile) {
+  async updateProduct(productId, productData, additionalData, imageFile) {
     const transaction = await sequelize.transaction();
     let product;
 
@@ -291,22 +293,23 @@ const productService = {
     try {
       const Products = await products.findAll({
         include: [
-          {
-            model: shop,
-          },
+          { model: shop },
           { model: battery, required: false },
           { model: inverter, required: false },
-          { model: solar_panel, required: false }
+          { model: solar_panel, required: false },
+          { model: rating, as: 'ratings', required: false }
         ]
       });
-      console.log(products)
+
 
       if (!Products || Products.length === 0) {
         return { success: false, message: "No products found in your shop." };
       }
 
-      // Transform data
-      const cleanProducts = Products.map(product => {
+      // تجهيز البيانات
+      const cleanProducts = [];
+
+      for (const product of Products) {
         const base = {
           productId: product.productId,
           name: product.name ?? null,
@@ -314,13 +317,15 @@ const productService = {
           category: product.category,
           createdAt: product.createdAt,
           shop: {
-            shopId: product.shop.shopId ?? undefined,
-            shopname: product.shop.shopname ?? undefined,
-            phone: product.shop.phone ?? undefined
-          }
+            shopId: product.shop?.shopId,
+            shopname: product.shop?.shopname,
+            phone: product.shop?.phone
+          },
+          details: {},
+       reviews: product.ratings?.map(r => r.review) || []
         };
 
-        // Add category-specific info
+        // إضافة تفاصيل حسب الفئة
         if (product.category === 'battery' && product.battery) {
           base.details = {
             batteryType: product.battery.batteryType,
@@ -328,8 +333,6 @@ const productService = {
           };
         } else if (product.category === 'inverter' && product.inverter) {
           base.details = {
-
-
             inverterRatingP: product.inverter.inverterRatingP,
             maxAc: product.inverter.maxAc,
             defaultAc: product.inverter.defaultAc,
@@ -345,8 +348,27 @@ const productService = {
           };
         }
 
-        return base;
-      });
+        // استدعاء Flask API لتحليل الريفيو
+        let positiveCount = 0;
+        if (base.reviews.length > 0) {
+          try {
+            const response = await axios.post("http://localhost:5000/predict", {
+              reviews: base.reviews
+            });
+            const predictions = response.data.predictions;
+
+            positiveCount = predictions.filter(p => p === 'Positive').length;
+          } catch (err) {
+            console.error("Flask API error:", err.message);
+          }
+        }
+
+        base.positiveReviewCount = positiveCount;
+        cleanProducts.push(base);
+      }
+
+      // ترتيب المنتجات حسب عدد الريفيو الإيجابية
+      cleanProducts.sort((a, b) => b.positiveReviewCount - a.positiveReviewCount);
 
       return {
         success: true,
@@ -361,36 +383,38 @@ const productService = {
         error: err.message
       };
     }
-  },
-  async addReview(userId,review){
+  }
+
+  ,
+  async addReview(userId, review) {
     try {
-    
-        const user = await account.findOne({
-            where: { accountId: userId },
-        });
 
-        if (!user) {
-            throw new Error('User not found');
-        }
+      const user = await account.findOne({
+        where: { accountId: userId },
+      });
 
-        
-        const Review = await rating .create({
-            customerId: userId, 
-            productId: review.productId,
-           review: review.review,
-           stars:review.stars
-        });
+      if (!user) {
+        throw new Error('User not found');
+      }
 
-        
-        return {
-            success: true,
-            message: 'review added successfully',
-            review:Review
-        };
-        
+
+      const Review = await rating.create({
+        customerId: userId,
+        productId: review.productId,
+        review: review.review,
+        stars: review.stars
+      });
+
+
+      return {
+        success: true,
+        message: 'review added successfully',
+        review: Review
+      };
+
     } catch (error) {
-        console.error('Error :', error);
-        throw error; 
+      console.error('Error :', error);
+      throw error;
     }
 
   }
