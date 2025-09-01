@@ -60,8 +60,10 @@ const userService = {
     const hashedPassword = await bcrypt.hash(userData.password, 10);
  
     // Save plain password for login after signup
+    
+   const checkCode= await this.sendCode(userData.email); 
     pendingUsers[userData.email] = {
-      checkCode,
+      checkCode: checkCode,
       userData: {
         ...userData,
         password: hashedPassword
@@ -69,13 +71,12 @@ const userService = {
       rawPassword: userData.password
     };
 
-    await this.sendCode(userData.email); 
-
     return { message: "Check your email for the verification code." };
   },
 
   async completeSignup(email, inputCode) {
     const entry = pendingUsers[email];
+    console.log(entry)
     if (!entry || entry.checkCode !== parseInt(inputCode)) {
       throw new Error("Invalid or expired verification code.");
     }

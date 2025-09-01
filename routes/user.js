@@ -17,7 +17,7 @@ router.post("/signup", async (req, res) => {
 
   try {
     // Check user data and send code
-    const { checkCode, userData } = await userService.prepareSignup({
+    const  userData  = await userService.prepareSignup({
       Fname,
       Lname,
       phone,
@@ -28,7 +28,7 @@ router.post("/signup", async (req, res) => {
     });
 
     // Store temporarily
-    tempStore[email] = { userData, checkCode };
+    tempStore[email] = { userData: userData};
 
     res
       .status(200)
@@ -49,7 +49,7 @@ router.post("/verify", async (req, res) => {
   const { email, checkCode } = req.body;
 
   try {
-    const { createdUser, rawPassword } = await userService.completeSignup(
+    const { rawPassword } = await userService.completeSignup(
       email,
       checkCode
     );
