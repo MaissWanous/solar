@@ -186,6 +186,18 @@ const userService = {
         throw error; 
     }
 }
+,async getTechnicalAccounts() {
+  try {
+    const technicalAccounts = await account.findAll({
+      where: { type: 'technical' }
+    });
+
+    return technicalAccounts;
+  } catch (error) {
+    console.error('Error fetching technical accounts:', error);
+    throw new Error('Failed to fetch technical accounts');
+  }
+}
 
 };
 

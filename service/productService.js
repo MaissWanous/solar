@@ -42,6 +42,7 @@ const productService = {
       product = await products.create(productData, { transaction });
 
       // 5. Add to category table
+      if(productData.category!='other')
       switch (productData.category.toLowerCase()) {
         case "battery":
           if (!additionalData.batteryType || !additionalData.batterySize) {

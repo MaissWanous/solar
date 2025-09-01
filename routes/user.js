@@ -180,6 +180,22 @@ router.get("/profile", async (req, res) => {
     res.status(401).json({ error: "Unauthorized access." });
   }
 });
+
+router.get("/technical", async (req, res) => {
+ 
+
+  try {
+
+    const user = await userService.getTechnicalAccounts();
+
+    if (!user) return res.status(404).json({ error: "User not found." });
+
+    res.status(200).json({ user });
+  } catch (error) {
+    console.error("Profile error:", error);
+    res.status(401).json({ error: "Unauthorized access." });
+  }
+});
 router.post("/addLinks", async (req, res) => {
   const { linkInfo } = req.body;
   const authHeader = req.headers.authorization;
