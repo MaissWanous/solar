@@ -16,7 +16,15 @@ const solarService = {
     let numPanel = dayLoad / panelOutput;
 
     // Estimate inverter power requirement
-    const volt = 60;
+    let volt ;
+    volt=
+    solarPanel==425?40.3:
+    solarPanel==450?41:
+    solarPanel==545?42:
+    solarPanel==585?44:
+    solarPanel==600?49:
+    solarPanel==615?50.2:
+    solarPanel==700?51:51.5
     const cardPanel = 450 / volt;
     let possibility = transformDay + 1000;
 
