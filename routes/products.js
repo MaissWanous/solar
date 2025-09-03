@@ -4,12 +4,12 @@ const jwtService = require("../service/jwtService");
 const router = express.Router();
 
 router.post("/addProduct", async (req, res) => {
-   const { productData, additionalData } = req.body;
+  //  const { productData, additionalData } = req.body;
   const imageFile = req.files?.picture;
   const authHeader = req.headers.authorization;
 
-  // const productData = JSON.parse(req.body.productData);
-  // const additionalData = JSON.parse(req.body.additionalData);
+  const productData = JSON.parse(req.body.productData);
+  const additionalData = JSON.parse(req.body.additionalData);
 
   if (!authHeader) {
     return res.status(401).json({ message: "Missing Authorization header" });

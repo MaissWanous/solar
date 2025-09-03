@@ -168,7 +168,7 @@ Content-Type: application/json
 
 ###test add product with picture in cmd 
 curl -X POST http://localhost:4000/addProduct ^
-  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsImlhdCI6MTc0OTc2MzAzNX0.URiPjUXvmDRIH0q2AoXL30x4M8Z6ffUKvuoXhVSC3BQ" ^
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsImlhdCI6MTc1NjkzNjY5OSwiZXhwIjoxNzU2OTQ3NDk5fQ.SDh8IpLTJ7Nb11BpXNxLxpMFMv05SCfp7BwIs8WgoG0" ^
   -F "productData={\"category\":\"inverter\",\"price\":\"10\",\"name\":\"inverter2\"}" ^
   -F "additionalData={\"inverterRatingP\":\"2\"}" ^
   -F "picture=@profile.jpg"
@@ -179,9 +179,9 @@ Content-Type: application/json
 
 ### Upload profile picture
 # in cmd 
-# curl -X POST http://localhost:4000/upload-profile-pic ^
-#   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsImlhdCI6MTc0OTc2MzAzNX0.URiPjUXvmDRIH0q2AoXL30x4M8Z6ffUKvuoXhVSC3BQ" ^
-#   -F "profilePic=@profile.jpg"
+curl -X POST http://localhost:4000/upload-profile-pic ^
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsImlhdCI6MTc1NjkzNjY5OSwiZXhwIjoxNzU2OTQ3NDk5fQ.SDh8IpLTJ7Nb11BpXNxLxpMFMv05SCfp7BwIs8WgoG0" ^
+  -F "profilePic=@profile.jpg"
 
 ### Fetch chat messages just between you and user 5
 GET http://localhost:4000/chat/2
