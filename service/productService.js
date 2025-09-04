@@ -315,6 +315,7 @@ const productService = {
           productId: product.productId,
           name: product.name ?? null,
           price: product.price ?? null,
+          picture: product.picture ?? null,
           category: product.category,
           createdAt: product.createdAt,
           shop: {

@@ -171,7 +171,7 @@ router.get("/profile", async (req, res) => {
   try {
     const decoded = jwtService.verifyToken(token);
     const user = await userService.findById(decoded.userId);
-
+    console.log(user)
     if (!user) return res.status(404).json({ error: "User not found." });
 
     res.status(200).json({ user });
