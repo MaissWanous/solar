@@ -1,4 +1,4 @@
-@token =eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsImlhdCI6MTc1NjcyNzA1OCwiZXhwIjoxNzU2NzM3ODU4fQ.1HzyzYctk4SYWn-4Mg0PTMir_-R5UzqImo1t0DIpvEw
+@token =eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsImlhdCI6MTc1NzAwNjIyMiwiZXhwIjoxNzU3MDE3MDIyfQ.qYuM7w9xvpK8_NRJJ768KyUfzfu058lkhQfRkafOJ3Y
 ### Create a new user
 POST http://localhost:4000/signup
 Content-Type: application/json
@@ -58,6 +58,20 @@ Content-Type: application/json
 GET http://localhost:4000/profile
 Authorization: Bearer {{token}}
 Content-Type: application/json
+
+### update profile
+PUT  http://localhost:4000/profile
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "Fname": "maiss",
+  "Lname":"",
+  "phone":"0999999",
+  "password":"1234",
+  "country":"",
+  "type":"customer"
+}
 ### Get technical
 GET http://localhost:4000/technical
 Content-Type: application/json
@@ -174,7 +188,7 @@ curl -X POST http://localhost:4000/addProduct ^
   -F "picture=@profile.jpg"
 
 ### Get all product
-GET https://l9vwjcs3-4000.uks1.devtunnels.ms/getAllProduct
+GET http://localhost:4000/getAllProduct
 Content-Type: application/json
 
 ### Upload profile picture

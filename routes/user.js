@@ -17,7 +17,7 @@ router.post("/signup", async (req, res) => {
 
   try {
     // Check user data and send code
-    const  userData  = await userService.prepareSignup({
+    const userData = await userService.prepareSignup({
       Fname,
       Lname,
       phone,
@@ -28,7 +28,7 @@ router.post("/signup", async (req, res) => {
     });
 
     // Store temporarily
-    tempStore[email] = { userData: userData};
+    tempStore[email] = { userData: userData };
 
     res
       .status(200)
@@ -122,9 +122,9 @@ router.post("/forget-password", async (req, res) => {
   try {
     const user = await userService.checkEmailExisting(email);
     if (!user) return res.status(404).json({ error: "Email not found." });
-console.log("ffffffff")
+    console.log("ffffffff")
     const code = await userService.sendCode(email);
- console.log(code)
+    console.log(code)
     tempStore[email] = { resetCode: code };
     console.log(code)
 
@@ -181,8 +181,32 @@ router.get("/profile", async (req, res) => {
   }
 });
 
+// UPDATE profile
+router.put("/profile", async (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader?.startsWith("Bearer ")) {
+    return res.status(401).json({ error: "Missing or malformed token." });
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  try {
+    const decoded = jwtService.verifyToken(token);
+    const updatedUser = await userService.updateProfile(decoded.userId, req.body);
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    res.status(200).json({ message: "Profile updated successfully", user: updatedUser });
+  } catch (error) {
+    console.error("Update profile error:", error);
+    res.status(500).json({ error: "Failed to update profile." });
+  }
+});
+
 router.get("/technical", async (req, res) => {
- 
+
 
   try {
 

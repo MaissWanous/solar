@@ -1,5 +1,5 @@
 // service/userService.js
-const { links,account, shop } = require("../models");
+const { links, account, shop } = require("../models");
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const path = require('path');
@@ -15,15 +15,33 @@ const userService = {
     if (!emailRegex.test(email)) {
       throw new Error("Invalid email format.");
     }
-    return await account.findOne({ where: { email:email } });
+    return await account.findOne({ where: { email: email } });
   },
 
   async findById(id) {
     return await account.findByPk(id);
   },
+  async updateProfile(userId, updates) {
+    const user = await account.findByPk(userId);
+    if (!user) return null;
 
+    const allowedFields = ["Fname", "Lname", "phone", "country","type"];
+    allowedFields.forEach(field => {
+      
+        user[field] = updates[field];
+  
+    if (field === "phone") {
+  const phoneValue = String(updates[field] || "").trim();
+  user[field] = parseInt(phoneValue);
+}
+
+    });
+
+    await user.save();
+    return user;
+  },
   async sendCode(email) {
-       const checkCode = 0;
+    const checkCode = 0;
     // Math.floor(100000 + Math.random() * 900000); // 6-digit code
 
     const confirmCode = checkCode;
@@ -58,10 +76,10 @@ const userService = {
     if (existing) throw new Error("Email already exists.");
 
     const hashedPassword = await bcrypt.hash(userData.password, 10);
- 
+
     // Save plain password for login after signup
-    
-   const checkCode= await this.sendCode(userData.email); 
+
+    const checkCode = await this.sendCode(userData.email);
     pendingUsers[userData.email] = {
       checkCode: checkCode,
       userData: {
@@ -89,26 +107,26 @@ const userService = {
     delete pendingUsers[email];
     return { createdUser, rawPassword: entry.rawPassword };
   },
- async login({ email, password }) {
+  async login({ email, password }) {
     try {
-        const user = await this.checkEmailExisting(email);
-        
-        if (!user) {
-            throw new Error("User not found");
-        }
+      const user = await this.checkEmailExisting(email);
 
-        const isValidPassword = await bcrypt.compare(password, user.password);
-        
-        if (!isValidPassword) {
-            throw new Error("Incorrect password");
-        }
+      if (!user) {
+        throw new Error("User not found");
+      }
 
-        return { user, message: "" };
+      const isValidPassword = await bcrypt.compare(password, user.password);
+
+      if (!isValidPassword) {
+        throw new Error("Incorrect password");
+      }
+
+      return { user, message: "" };
     } catch (error) {
-        throw new Error(error.message || "Login failed");
+      throw new Error(error.message || "Login failed");
     }
-}
-,
+  }
+  ,
 
   async updatePassword(email, newPassword) {
     const user = await this.checkEmailExisting(email);
@@ -159,46 +177,46 @@ const userService = {
   },
   async addLink(userId, linkInfo) {
     try {
-    
-        const user = await account.findOne({
-            where: { accountId: userId },
-        });
 
-        if (!user) {
-            throw new Error('User not found');
-        }
+      const user = await account.findOne({
+        where: { accountId: userId },
+      });
 
-        
-        const newLink = await links.create({
-            linkUserId: userId, 
-            linkName: linkInfo.linkName,
-            link: linkInfo.link
-        });
+      if (!user) {
+        throw new Error('User not found');
+      }
 
-        
-        return {
-            success: true,
-            message: 'Link added successfully',
-            link: newLink
-        };
-        
+
+      const newLink = await links.create({
+        linkUserId: userId,
+        linkName: linkInfo.linkName,
+        link: linkInfo.link
+      });
+
+
+      return {
+        success: true,
+        message: 'Link added successfully',
+        link: newLink
+      };
+
     } catch (error) {
-        console.error('Error adding link:', error);
-        throw error; 
+      console.error('Error adding link:', error);
+      throw error;
     }
-}
-,async getTechnicalAccounts() {
-  try {
-    const technicalAccounts = await account.findAll({
-      where: { type: 'technical' }
-    });
-
-    return technicalAccounts;
-  } catch (error) {
-    console.error('Error fetching technical accounts:', error);
-    throw new Error('Failed to fetch technical accounts');
   }
-}
+  , async getTechnicalAccounts() {
+    try {
+      const technicalAccounts = await account.findAll({
+        where: { type: 'technical' }
+      });
+
+      return technicalAccounts;
+    } catch (error) {
+      console.error('Error fetching technical accounts:', error);
+      throw new Error('Failed to fetch technical accounts');
+    }
+  }
 
 };
 
