@@ -1,4 +1,4 @@
-@token =eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJpYXQiOjE3NTcwNTgyNjIsImV4cCI6MTc1NzA2OTA2Mn0.THXolAJyaVaxY_xAe-e1_IUb7hTDUU8WO1L7luK9tMY
+@token =eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc1NzA2MjY2MCwiZXhwIjoxNzU3MDczNDYwfQ.Ou6RYYGm5er0n5Pb0nnZo4euM0Qb6sW8nCUsGdoHMzg
 ### Create a new user
 POST http://localhost:4000/signup
 Content-Type: application/json
@@ -29,8 +29,8 @@ POST http://localhost:4000/logIn
 Content-Type: application/json
 
 {
-  "email": "whiteocjd@gmail.com",
-  "password": "1246"
+  "email": "hiteocjd@gmail.com",
+  "password": "1234"
 }
 
 ###get refresh token
@@ -70,7 +70,6 @@ Content-Type: application/json
   "Fname": "ss",
   "Lname":"",
   "phone":"0999999",
-  "password":"1234",
   "country":"",
   "shop_name":"shop",
   "shop_phone":"123"

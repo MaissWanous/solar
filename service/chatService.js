@@ -1,5 +1,5 @@
-const { Message } = require("../models");
-const { Op, Sequelize } = require("sequelize");
+const { Message, account } = require("../models");
+const { Op } = require("sequelize");
 
 const chatService = {
   async getMessagesBetweenUsers(userId, withUserId) {
@@ -10,9 +10,17 @@ const chatService = {
           { senderId: withUserId, receiverId: userId }
         ]
       },
-      order: [['createdAt', 'ASC']]
+      include: [
+        {
+          model: account,
+          as: "sender",
+          attributes: ["accountId", "Fname", "profilePic"]
+        }
+      ],
+      order: [["createdAt", "ASC"]]
     });
   },
+
   async getLastMessages(userId) {
     const lastMessages = await Message.findAll({
       where: {
@@ -21,25 +29,30 @@ const chatService = {
           { receiverId: userId }
         ]
       },
-      order: [['createdAt', 'DESC']],
-      raw: true
+      include: [
+        {
+          model: account,
+          as: "sender",
+          attributes: ["accountId", "Fname", "profilePic"]
+        }
+      ],
+      order: [["createdAt", "DESC"]]
     });
 
-    // Filter to get the last message per chat 
+    // فلترة آخر رسالة لكل محادثة
     const chatMap = new Map();
-
     for (const msg of lastMessages) {
       const user1 = Math.min(msg.senderId, msg.receiverId);
       const user2 = Math.max(msg.senderId, msg.receiverId);
       const key = `${user1}_${user2}`;
       if (!chatMap.has(key)) {
-        chatMap.set(key, msg); // خزن أول رسالة تمر (لأنها الأحدث)
+        chatMap.set(key, msg);
       }
     }
 
     return Array.from(chatMap.values());
-  }
-  ,
+  },
+
   async saveMessage(senderId, receiverId, content) {
     return await Message.create({
       senderId,
@@ -50,3 +63,4 @@ const chatService = {
 };
 
 module.exports = chatService;
+
