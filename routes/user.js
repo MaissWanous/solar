@@ -1,4 +1,5 @@
 const express = require("express");
+const bcrypt = require("bcryptjs");
 const router = express.Router();
 const userService = require("../service/userService");
 const authService = require("../service/authService");
@@ -124,7 +125,6 @@ router.post("/forget-password", async (req, res) => {
   try {
     const user = await userService.checkEmailExisting(email);
     if (!user) return res.status(404).json({ error: "Email not found." });
-    console.log("ffffffff")
     const code = await userService.sendCode(email);
     console.log(code)
     tempStore[email] = { resetCode: code };
@@ -151,6 +151,38 @@ router.post("/reset-password", async (req, res) => {
 
     await userService.updatePassword(email, newPassword);
     delete tempStore[email];
+
+    res.status(200).json({ message: "Password updated successfully." });
+  } catch (error) {
+    console.error("Reset password error:", error);
+    res.status(500).json({ error: "Failed to reset password." });
+  }
+});
+
+router.post("/reset-Mypassword", async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+
+  const authHeader = req.headers.authorization;
+  if (!authHeader?.startsWith("Bearer ")) {
+    return res.status(401).json({ error: "Missing or malformed token." });
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  try {
+    const decoded = jwtService.verifyToken(token);
+    const user = await userService.findById(decoded.userId);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    const isValid = await bcrypt.compare(oldPassword, user.password);
+    if (!isValid) {
+      return res.status(401).json({ error: "Incorrect old password." });
+    }
+
+    await userService.updatePassword(user.email, newPassword);
 
     res.status(200).json({ message: "Password updated successfully." });
   } catch (error) {
