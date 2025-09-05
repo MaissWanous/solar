@@ -18,28 +18,58 @@ const userService = {
     return await account.findOne({ where: { email: email } });
   },
 
-  async findById(id) {
-    return await account.findByPk(id);
-  },
-  async updateProfile(userId, updates) {
-    const user = await account.findByPk(userId);
-    if (!user) return null;
+ async findById(id) {
+  const user = await account.findByPk(id);
+  if (!user) return null;
 
-    const allowedFields = ["Fname", "Lname", "phone", "country","type"];
-    allowedFields.forEach(field => {
-      
+  if (user.type === "shopKeeper") {
+    const shopRecord = await shop.findOne({ where: { shopKeeperId: user.accountId } });
+    if (shopRecord) {
+      user.dataValues.shop = shopRecord; 
+    }
+  }
+
+  return user;
+}
+,
+async updateProfile(userId, updates) {
+  const user = await account.findByPk(userId);
+  if (!user) return null;
+
+  const allowedFields = ["Fname", "Lname", "phone", "country"];
+  allowedFields.forEach(field => {
+    if (updates[field] !== undefined) {
+      if (field === "phone") {
+        user[field] = parseInt(updates[field]);
+      } else {
         user[field] = updates[field];
+      }
+    }
+  });
+
+  await user.save();
+
   
-    if (field === "phone") {
-  const phoneValue = String(updates[field] || "").trim();
-  user[field] = parseInt(phoneValue);
+  if (user.type === "shopKeeper") {
+    const shopRecord = await shop.findOne({ where: { shopKeeperId: user.accountId } });
+
+    if (shopRecord) {
+      if (updates.shop_name !== undefined) {
+        shopRecord.shopname = updates.shop_name;
+      }
+      if (updates.shop_phone !== undefined) {
+        shopRecord.phone = parseInt(updates.shop_phone);
+      }
+      await shopRecord.save();
+
+      user.dataValues.shop = shopRecord;
+    }
+  }
+
+  return user;
 }
 
-    });
-
-    await user.save();
-    return user;
-  },
+  ,
   async sendCode(email) {
     const checkCode = 0;
     // Math.floor(100000 + Math.random() * 900000); // 6-digit code
@@ -101,7 +131,7 @@ const userService = {
 
     const createdUser = await account.create(entry.userData);
     if (entry.userData.type === "shopKeeper") {
-      await shop.create({ shopKeeperId: createdUser.accountId });
+      await shop.create({ shopKeeperId: createdUser.accountId, shopname: entry.userData.shop_name, phone: parseInt(entry.userData.shop_phone) });
     }
 
     delete pendingUsers[email];

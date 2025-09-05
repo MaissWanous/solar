@@ -13,7 +13,7 @@ const tempStore = {};
  * User Signup - Step 1: Register and send verification code
  */
 router.post("/signup", async (req, res) => {
-  const { Fname, Lname, phone, email, password, country, type } = req.body;
+  const { Fname, Lname, phone, email, password, country, type,shop_name,shop_phone } = req.body;
 
   try {
     // Check user data and send code
@@ -25,6 +25,8 @@ router.post("/signup", async (req, res) => {
       password,
       country,
       type,
+      shop_name,
+      shop_phone
     });
 
     // Store temporarily
