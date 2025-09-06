@@ -56,6 +56,25 @@ router.put("/updateProduct/:productId", async (req, res) => {
     res.status(500).json({ error: error.message || "Failed to add product." });
   }
 });
+router.delete("/deleteProduct/:productId", async (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader?.startsWith("Bearer ")) {
+    return res.status(401).json({ error: "Missing or malformed token." });
+  }
+
+  const token = authHeader.split(" ")[1];
+  try {
+    const decoded = jwtService.verifyToken(token);
+    const productId = parseInt(req.params.productId);
+
+    const result = await productService.deleteProduct(decoded.userId, productId);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error("Delete product error:", error.message);
+    res.status(500).json({ error: error.message || "Failed to delete product." });
+  }
+});
+
 router.get("/getMyProduct", async (req, res) => {
   const authHeader = req.headers.authorization;
 

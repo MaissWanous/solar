@@ -1,4 +1,4 @@
-@token =eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc1NzA3OTc0NSwiZXhwIjoxNzU3MDkwNTQ1fQ.9RK-925AhAxyz1FchGTavVc692M_e2JqV6_qGKDE1po
+@token =eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsImlhdCI6MTc1NzE2MTk4MiwiZXhwIjoxNzU3MTcyNzgyfQ.qYYW8UxrYzcSJewMPK1cQ8Ocs9UdPsxBGkRpJ4XInp4
 ### Create a new user
 POST http://localhost:4000/signup
 Content-Type: application/json
@@ -19,7 +19,7 @@ POST http://localhost:4000/verify
 Content-Type: application/json
 
 {
-  "email": "shop@gmail.com",
+  "email": "whiteocjd@gmail.com",
   "checkCode": "0"
 }
 
@@ -29,8 +29,8 @@ POST http://localhost:4000/logIn
 Content-Type: application/json
 
 {
-  "email": "hiteocjd@gmail.com",
-  "password": "1235"
+  "email": "whiteocjd@gmail.com",
+  "password": "1246"
 }
 
 ###get refresh token
@@ -181,6 +181,12 @@ Content-Type: application/json
 
   }
 }
+
+### delete product
+delete http://localhost:4000/deleteProduct/16
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
 ### Add Review
 POST http://localhost:4000/addReview
 Authorization: Bearer {{token}}

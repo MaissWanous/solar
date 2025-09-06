@@ -42,23 +42,23 @@ const productService = {
       product = await products.create(productData, { transaction });
 
       // 5. Add to category table
-      if(productData.category!='other')
-      switch (productData.category.toLowerCase()) {
-        case "battery":
-          if (!additionalData.batteryType || !additionalData.batterySize) {
-            throw new Error("Missing battery fields.");
-          }
-          await battery.create({ productId: product.productId, ...additionalData }, { transaction });
-          break;
-        case "inverter":
-          await inverter.create({ productId: product.productId, ...additionalData }, { transaction });
-          break;
-        case "solar_panel":
-          await solar_panel.create({ productId: product.productId, ...additionalData }, { transaction });
-          break;
-        default:
-          throw new Error(`Unsupported product category: ${productData.category}`);
-      }
+      if (productData.category != 'other')
+        switch (productData.category.toLowerCase()) {
+          case "battery":
+            if (!additionalData.batteryType || !additionalData.batterySize) {
+              throw new Error("Missing battery fields.");
+            }
+            await battery.create({ productId: product.productId, ...additionalData }, { transaction });
+            break;
+          case "inverter":
+            await inverter.create({ productId: product.productId, ...additionalData }, { transaction });
+            break;
+          case "solar_panel":
+            await solar_panel.create({ productId: product.productId, ...additionalData }, { transaction });
+            break;
+          default:
+            throw new Error(`Unsupported product category: ${productData.category}`);
+        }
 
       // 6. Commit DB changes
       await transaction.commit();
@@ -103,6 +103,67 @@ const productService = {
     }
 
     return product;
+  }
+  ,
+  async deleteProduct(userId, productId) {
+    const transaction = await sequelize.transaction();
+    try {
+
+      const userShop = await shop.findOne({
+        where: { shopKeeperId: userId },
+        transaction
+      });
+
+      if (!userShop) {
+        throw new Error("No shop found for this user.");
+      }
+
+
+      const product = await products.findOne({
+        where: { productId, shopId: userShop.shopId },
+        transaction
+      });
+
+      if (!product) {
+        throw new Error("Product not found or you don't have permission to delete it.");
+      }
+
+
+      switch (product.category?.toLowerCase()) {
+        case "battery":
+          await battery.destroy({ where: { productId }, transaction });
+          break;
+        case "inverter":
+          await inverter.destroy({ where: { productId }, transaction });
+          break;
+        case "solar_panel":
+          await solar_panel.destroy({ where: { productId }, transaction });
+          break;
+      }
+
+
+      await rating.destroy({ where: { productId }, transaction });
+
+
+      if (product.picture) {
+        const imagePath = path.join(__dirname, "../public", product.picture);
+        if (fs.existsSync(imagePath)) {
+          fs.unlinkSync(imagePath);
+        }
+      }
+
+
+      await products.destroy({ where: { productId }, transaction });
+
+
+      await transaction.commit();
+
+      return { success: true, message: "Product deleted successfully." };
+    } catch (err) {
+      await transaction.rollback();
+      console.error("Delete product error:", err.message);
+      throw err;
+    }
   }
 
   ,
@@ -289,7 +350,6 @@ const productService = {
     }
   }
   ,
-
   async getAllProducts() {
     try {
       const Products = await products.findAll({
@@ -302,12 +362,10 @@ const productService = {
         ]
       });
 
-
       if (!Products || Products.length === 0) {
         return { success: false, message: "No products found in your shop." };
       }
 
-      // تجهيز البيانات
       const cleanProducts = [];
 
       for (const product of Products) {
@@ -324,7 +382,7 @@ const productService = {
             phone: product.shop?.phone
           },
           details: {},
-       reviews: product.ratings?.map(r => r.review) || []
+          reviews: product.ratings?.map(r => r.review) || []
         };
 
         // إضافة تفاصيل حسب الفئة
@@ -350,7 +408,7 @@ const productService = {
           };
         }
 
-        // استدعاء Flask API لتحليل الريفيو
+        // تحليل الريفيو
         let positiveCount = 0;
         if (base.reviews.length > 0) {
           try {
@@ -366,11 +424,23 @@ const productService = {
         }
 
         base.positiveReviewCount = positiveCount;
+        base.totalReviews = base.reviews.length;
+        base.positiveReviewPercentage = base.totalReviews > 0
+          ? (positiveCount / base.totalReviews) * 100
+          : 0;
+
         cleanProducts.push(base);
       }
 
-      // ترتيب المنتجات حسب عدد الريفيو الإيجابية
-      cleanProducts.sort((a, b) => b.positiveReviewCount - a.positiveReviewCount);
+      // ترتيب المنتجات حسب النسبة المئوية أولاً، ثم عدد التعليقات إذا النسبة متساوية
+      cleanProducts.sort((a, b) => {
+        if (b.positiveReviewPercentage === a.positiveReviewPercentage) {
+          // إذا النسبة متساوية، نرتب حسب عدد التعليقات الكلي
+          return b.totalReviews - a.totalReviews;
+        }
+        // الترتيب الأساسي حسب النسبة المئوية
+        return b.positiveReviewPercentage - a.positiveReviewPercentage;
+      });
 
       return {
         success: true,
