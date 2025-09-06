@@ -273,82 +273,113 @@ const productService = {
     return product;
   }
   ,
-  async getMyProduct(userId) {
-    try {
-      const myProducts = await products.findAll({
-        include: [
-          {
-            model: shop,
-            where: { shopKeeperId: userId }
-          },
-          { model: battery, required: false },
-          { model: inverter, required: false },
-          { model: solar_panel, required: false }
-        ]
-      });
+async getMyProduct(userId) {
+  try {
+    const myProducts = await products.findAll({
+      include: [
+        {
+          model: shop,
+          where: { shopKeeperId: userId }
+        },
+        { model: battery, required: false },
+        { model: inverter, required: false },
+        { model: solar_panel, required: false },
+        { model: rating, as: 'ratings', required: false }
+      ]
+    });
 
-      if (!myProducts || myProducts.length === 0) {
-        return { success: false, message: "No products found in your shop." };
+    if (!myProducts || myProducts.length === 0) {
+      return { success: false, message: "No products found in your shop." };
+    }
+
+    const cleanProducts = [];
+
+    for (const product of myProducts) {
+      const base = {
+        productId: product.productId,
+        name: product.name ?? null,
+        price: product.price ?? null,
+        picture: product.picture ?? null,
+        category: product.category,
+        createdAt: product.createdAt,
+        shop: {
+          shopId: product.shop.shopId,
+          shopname: product.shop.shopname ?? undefined,
+          phone: product.shop.phone ?? undefined
+        },
+        details: {},
+        reviews: product.ratings?.map(r => r.review) || []
+      };
+
+      // إضافة تفاصيل حسب الفئة
+      if (product.category === 'battery' && product.battery) {
+        base.details = {
+          batteryType: product.battery.batteryType,
+          batterySize: product.battery.batterySize
+        };
+      } else if (product.category === 'inverter' && product.inverter) {
+        base.details = {
+          inverterRatingP: product.inverter.inverterRatingP,
+          maxAc: product.inverter.maxAc,
+          defaultAc: product.inverter.defaultAc,
+          solarRatingP: product.inverter.solarRatingP,
+          maxSolarVolt: product.inverter.maxSolarVolt,
+          Mppt: product.inverter.Mppt
+        };
+      } else if (product.category === 'solar_panel' && product.solar_panel) {
+        base.details = {
+          maximumPower: product.solar_panel.maximumPower,
+          shortCurrent: product.solar_panel.shortCurrent,
+          openVoltage: product.solar_panel.openVoltage
+        };
       }
 
-      // Transform data
-      const cleanProducts = myProducts.map(product => {
-        const base = {
-          productId: product.productId,
-          name: product.name ?? null,
-          price: product.price ?? null,
-          picture: product.picture ?? null,
-          category: product.category,
-          createdAt: product.createdAt,
-          shop: {
-            shopId: product.shop.shopId,
-            shopname: product.shop.shopname ?? undefined,
-            phone: product.shop.phone ?? undefined
-          }
-        };
-
-        // Add category-specific info
-        if (product.category === 'battery' && product.battery) {
-          base.details = {
-            batteryType: product.battery.batteryType,
-            batterySize: product.battery.batterySize
-          };
-        } else if (product.category === 'inverter' && product.inverter) {
-          base.details = {
-
-
-            inverterRatingP: product.inverter.inverterRatingP,
-            maxAc: product.inverter.maxAc,
-            defaultAc: product.inverter.defaultAc,
-            solarRatingP: product.inverter.solarRatingP,
-            maxSolarVolt: product.inverter.maxSolarVolt,
-            Mppt: product.inverter.Mppt
-          };
-        } else if (product.category === 'solar_panel' && product.solar_panel) {
-          base.details = {
-            maximumPower: product.solar_panel.maximumPower,
-            shortCurrent: product.solar_panel.shortCurrent,
-            openVoltage: product.solar_panel.openVoltage
-          };
+      // تحليل الريفيوهات
+      let positiveCount = 0;
+      if (base.reviews.length > 0) {
+        try {
+          const response = await axios.post("http://localhost:5000/predict", {
+            reviews: base.reviews
+          });
+          const predictions = response.data.predictions;
+          positiveCount = predictions.filter(p => p === 'Positive').length;
+        } catch (err) {
+          console.error("Flask API error:", err.message);
         }
+      }
 
-        return base;
-      });
+      base.positiveReviewCount = positiveCount;
+      base.totalReviews = base.reviews.length;
+      base.positiveReviewPercentage = base.totalReviews > 0
+        ? (positiveCount / base.totalReviews) * 100
+        : 0;
 
-      return {
-        success: true,
-        data: cleanProducts
-      };
-
-    } catch (err) {
-      console.error("Error fetching products:", err);
-      return {
-        success: false,
-        message: "Failed to retrieve products.",
-        error: err.message
-      };
+      cleanProducts.push(base);
     }
+
+    // ترتيب المنتجات: النسبة المئوية أولاً، ثم عدد التعليقات إذا النسبة متساوية
+    cleanProducts.sort((a, b) => {
+      if (b.positiveReviewPercentage === a.positiveReviewPercentage) {
+        return b.totalReviews - a.totalReviews;
+      }
+      return b.positiveReviewPercentage - a.positiveReviewPercentage;
+    });
+
+    return {
+      success: true,
+      data: cleanProducts
+    };
+
+  } catch (err) {
+    console.error("Error fetching products:", err);
+    return {
+      success: false,
+      message: "Failed to retrieve products.",
+      error: err.message
+    };
   }
+}
+
   ,
   async getAllProducts() {
     try {
