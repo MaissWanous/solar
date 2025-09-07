@@ -284,7 +284,17 @@ const productService = {
           { model: battery, required: false },
           { model: inverter, required: false },
           { model: solar_panel, required: false },
-          { model: rating, as: 'ratings', required: false }
+          {
+            model: rating,
+            as: 'ratings',
+            required: false,
+            include: [
+              {
+                model: account,
+                attributes: ['accountId', 'Fname', 'Lname']
+              }
+            ]
+          }
         ]
       });
 
@@ -308,7 +318,15 @@ const productService = {
             phone: product.shop.phone ?? undefined
           },
           details: {},
-          reviews: product.ratings?.map(r => r.review) || []
+          reviews: product.ratings?.map(r => ({
+            review: r.review,
+            stars: r.stars,
+            customer: {
+              accountId: r.account?.accountId,
+              name: `${r.account?.Fname || ''} ${r.account?.Lname || ''}`.trim(),
+              picture: r.account?.profilePic || "null"
+            }
+          })) || []
         };
 
         // إضافة تفاصيل حسب الفئة
@@ -336,12 +354,13 @@ const productService = {
 
         // تحليل الريفيوهات
         let positiveCount = 0;
-        if (base.reviews.length > 0) {
+       if (base.reviews.length > 0) {
           try {
             const response = await axios.post("http://localhost:5000/predict", {
-              reviews: base.reviews
+              reviews: base.reviews.map(r => r.review)
             });
             const predictions = response.data.predictions;
+
             positiveCount = predictions.filter(p => p === 'Positive').length;
           } catch (err) {
             console.error("Flask API error:", err.message);
@@ -430,7 +449,7 @@ const productService = {
             customer: {
               accountId: r.account?.accountId,
               name: `${r.account?.Fname || ''} ${r.account?.Lname || ''}`.trim(),
-              picture:r.account?.profilePic||"null"
+              picture: r.account?.profilePic || "null"
             }
           })) || []
         };

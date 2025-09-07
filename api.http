@@ -1,17 +1,17 @@
-@token =eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsImlhdCI6MTc1NzE2MTk4MiwiZXhwIjoxNzU3MTcyNzgyfQ.qYYW8UxrYzcSJewMPK1cQ8Ocs9UdPsxBGkRpJ4XInp4
+@token =eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc1NzI0MzU5NCwiZXhwIjoxNzU3MjU0Mzk0fQ.-0Gp5CxFJUDmtjZ4og3zKe_Ydn5zlZTvWiOqtTkKcZg
 ### Create a new user
 POST http://localhost:4000/signup
 Content-Type: application/json
 
 {
-  "Fname": "mmm",
-  " Lname":"",
-  " phone":"",
+  "Fname": "maiss",
+  " Lname":"wanous",
+  " phone":"0987654321",
   "email": "shop@gmail.com",
   "password":"1234",
   "country":"",
   "type":"shopKeeper",
-  "shop_name":"",
+  "shop_name":"shop",
   "shop_phone":"999999"
 }
 ###check code
@@ -19,7 +19,7 @@ POST http://localhost:4000/verify
 Content-Type: application/json
 
 {
-  "email": "whiteocjd@gmail.com",
+  "email": "shop@gmail.com",
   "checkCode": "0"
 }
 
@@ -94,24 +94,25 @@ Content-Type: application/json
 
 # product data same for all product
 ### Add battery
-POST https://l9vwjcs3-4000.uks1.devtunnels.ms/addProduct
+POST http://localhost:4000/addProduct
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "productData":{
-    "category":"battery",
-    "description":"",
-     "price":"100",
-    "name": "battery",
-    "picture":""
-    
-  },
-  "additionalData":{
-    "batteryType":"1",
-    "batterySize":"55"
+
+  "productData": {
+    "category": "battery",
+    "price": "320",
+    "name": "Luminous Inverlast Pro 12V 230Ah Tall Tubular Battery",
+    "description": "Heavy-duty 12V 230Ah tall tubular lead-acid battery designed for deep cycle solar applications, with long service life and low maintenance."
+     },
+  "additionalData": {
+    "batteryType": "tubular",
+    "batterySize": "230"
   }
 }
+
+
 
 ### Update battery
 put http://localhost:4000/updateProduct/4
@@ -133,40 +134,42 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "productData":{
-    "category":"inverter",
-    "price":"100",
-    "name": "inverter3",
-    "description":" "
-
+  "productData": {
+    "category": "inverter",
+    "price": "1800",
+    "name": "SUNPOLO 8.2KW Hybrid Solar Inverter",
+    "description": "8.2kW hybrid solar inverter with dual MPPT, 48V battery support, pure sine wave output, and grid/off-grid capability."
+    
   },
-  "additionalData":{
-    "inverterRatingP":"1",
-      "maxAc": "2",
-      "defaultAc":"2" ,
-      "solarRatingP":"2" ,
-      "maxSolarVolt": "2",
-      "Mppt": "2"
+  "additionalData": {
+    "inverterRatingP": "8000",
+    "maxAc": "34.8",
+    "defaultAc": "30",
+    "solarRatingP": "8000",
+    "maxSolarVolt": "450",
+    "Mppt": "2"
   }
 }
+
+
 ### Add solar panel
 POST http://localhost:4000/addProduct
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "productData":{
-    "category":"solar_panel",
-    "price":"100",
-    "name": "solar panel"
-
+  "productData": {
+    "category": "solar_panel",
+    "price": "250",
+    "name": "Monocrystalline Solar Panel 450W"
   },
-  "additionalData":{
-     "maximumPower":"2" ,
-      "shortCurrent":"2",
-      "openVoltage":"2"
+  "additionalData": {
+    "maximumPower": "450",
+    "shortCurrent": "10.5",
+    "openVoltage": "49.5"
   }
 }
+
 
 ### Add other
 POST http://localhost:4000/addProduct
@@ -188,14 +191,15 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 ### Add Review
-POST http://localhost:4000/addReview/4
+POST http://localhost:4000/addReview/5
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "review": "The instructions were confusing and the setup was a nightmare. Would not buy again.",
-  "stars": 5
+  "review": "Average performance. It does the job, but I’ve seen better options in the same price range.",
+  "stars": 3
 }
+
 
 ###test add product with picture in cmd 
 curl -X POST http://localhost:4000/addProduct ^
