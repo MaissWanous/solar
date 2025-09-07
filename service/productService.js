@@ -429,7 +429,8 @@ const productService = {
             stars: r.stars,
             customer: {
               accountId: r.account?.accountId,
-              name: `${r.account?.Fname || ''} ${r.account?.Lname || ''}`.trim()
+              name: `${r.account?.Fname || ''} ${r.account?.Lname || ''}`.trim(),
+              picture:r.account?.profilePic||"null"
             }
           })) || []
         };
