@@ -273,112 +273,112 @@ const productService = {
     return product;
   }
   ,
-async getMyProduct(userId) {
-  try {
-    const myProducts = await products.findAll({
-      include: [
-        {
-          model: shop,
-          where: { shopKeeperId: userId }
-        },
-        { model: battery, required: false },
-        { model: inverter, required: false },
-        { model: solar_panel, required: false },
-        { model: rating, as: 'ratings', required: false }
-      ]
-    });
+  async getMyProduct(userId) {
+    try {
+      const myProducts = await products.findAll({
+        include: [
+          {
+            model: shop,
+            where: { shopKeeperId: userId }
+          },
+          { model: battery, required: false },
+          { model: inverter, required: false },
+          { model: solar_panel, required: false },
+          { model: rating, as: 'ratings', required: false }
+        ]
+      });
 
-    if (!myProducts || myProducts.length === 0) {
-      return { success: false, message: "No products found in your shop." };
-    }
+      if (!myProducts || myProducts.length === 0) {
+        return { success: false, message: "No products found in your shop." };
+      }
 
-    const cleanProducts = [];
+      const cleanProducts = [];
 
-    for (const product of myProducts) {
-      const base = {
-        productId: product.productId,
-        name: product.name ?? null,
-        price: product.price ?? null,
-        picture: product.picture ?? null,
-        category: product.category,
-        createdAt: product.createdAt,
-        shop: {
-          shopId: product.shop.shopId,
-          shopname: product.shop.shopname ?? undefined,
-          phone: product.shop.phone ?? undefined
-        },
-        details: {},
-        reviews: product.ratings?.map(r => r.review) || []
+      for (const product of myProducts) {
+        const base = {
+          productId: product.productId,
+          name: product.name ?? null,
+          price: product.price ?? null,
+          picture: product.picture ?? null,
+          category: product.category,
+          createdAt: product.createdAt,
+          shop: {
+            shopId: product.shop.shopId,
+            shopname: product.shop.shopname ?? undefined,
+            phone: product.shop.phone ?? undefined
+          },
+          details: {},
+          reviews: product.ratings?.map(r => r.review) || []
+        };
+
+        // إضافة تفاصيل حسب الفئة
+        if (product.category === 'battery' && product.battery) {
+          base.details = {
+            batteryType: product.battery.batteryType,
+            batterySize: product.battery.batterySize
+          };
+        } else if (product.category === 'inverter' && product.inverter) {
+          base.details = {
+            inverterRatingP: product.inverter.inverterRatingP,
+            maxAc: product.inverter.maxAc,
+            defaultAc: product.inverter.defaultAc,
+            solarRatingP: product.inverter.solarRatingP,
+            maxSolarVolt: product.inverter.maxSolarVolt,
+            Mppt: product.inverter.Mppt
+          };
+        } else if (product.category === 'solar_panel' && product.solar_panel) {
+          base.details = {
+            maximumPower: product.solar_panel.maximumPower,
+            shortCurrent: product.solar_panel.shortCurrent,
+            openVoltage: product.solar_panel.openVoltage
+          };
+        }
+
+        // تحليل الريفيوهات
+        let positiveCount = 0;
+        if (base.reviews.length > 0) {
+          try {
+            const response = await axios.post("http://localhost:5000/predict", {
+              reviews: base.reviews
+            });
+            const predictions = response.data.predictions;
+            positiveCount = predictions.filter(p => p === 'Positive').length;
+          } catch (err) {
+            console.error("Flask API error:", err.message);
+          }
+        }
+
+        base.positiveReviewCount = positiveCount;
+        base.totalReviews = base.reviews.length;
+        base.positiveReviewPercentage = base.totalReviews > 0
+          ? (positiveCount / base.totalReviews) * 100
+          : 0;
+
+        cleanProducts.push(base);
+      }
+
+      // ترتيب المنتجات: النسبة المئوية أولاً، ثم عدد التعليقات إذا النسبة متساوية
+      cleanProducts.sort((a, b) => {
+        if (b.positiveReviewPercentage === a.positiveReviewPercentage) {
+          return b.totalReviews - a.totalReviews;
+        }
+        return b.positiveReviewPercentage - a.positiveReviewPercentage;
+      });
+
+      return {
+        success: true,
+        data: cleanProducts
       };
 
-      // إضافة تفاصيل حسب الفئة
-      if (product.category === 'battery' && product.battery) {
-        base.details = {
-          batteryType: product.battery.batteryType,
-          batterySize: product.battery.batterySize
-        };
-      } else if (product.category === 'inverter' && product.inverter) {
-        base.details = {
-          inverterRatingP: product.inverter.inverterRatingP,
-          maxAc: product.inverter.maxAc,
-          defaultAc: product.inverter.defaultAc,
-          solarRatingP: product.inverter.solarRatingP,
-          maxSolarVolt: product.inverter.maxSolarVolt,
-          Mppt: product.inverter.Mppt
-        };
-      } else if (product.category === 'solar_panel' && product.solar_panel) {
-        base.details = {
-          maximumPower: product.solar_panel.maximumPower,
-          shortCurrent: product.solar_panel.shortCurrent,
-          openVoltage: product.solar_panel.openVoltage
-        };
-      }
-
-      // تحليل الريفيوهات
-      let positiveCount = 0;
-      if (base.reviews.length > 0) {
-        try {
-          const response = await axios.post("http://localhost:5000/predict", {
-            reviews: base.reviews
-          });
-          const predictions = response.data.predictions;
-          positiveCount = predictions.filter(p => p === 'Positive').length;
-        } catch (err) {
-          console.error("Flask API error:", err.message);
-        }
-      }
-
-      base.positiveReviewCount = positiveCount;
-      base.totalReviews = base.reviews.length;
-      base.positiveReviewPercentage = base.totalReviews > 0
-        ? (positiveCount / base.totalReviews) * 100
-        : 0;
-
-      cleanProducts.push(base);
+    } catch (err) {
+      console.error("Error fetching products:", err);
+      return {
+        success: false,
+        message: "Failed to retrieve products.",
+        error: err.message
+      };
     }
-
-    // ترتيب المنتجات: النسبة المئوية أولاً، ثم عدد التعليقات إذا النسبة متساوية
-    cleanProducts.sort((a, b) => {
-      if (b.positiveReviewPercentage === a.positiveReviewPercentage) {
-        return b.totalReviews - a.totalReviews;
-      }
-      return b.positiveReviewPercentage - a.positiveReviewPercentage;
-    });
-
-    return {
-      success: true,
-      data: cleanProducts
-    };
-
-  } catch (err) {
-    console.error("Error fetching products:", err);
-    return {
-      success: false,
-      message: "Failed to retrieve products.",
-      error: err.message
-    };
   }
-}
 
   ,
   async getAllProducts() {
@@ -389,9 +389,20 @@ async getMyProduct(userId) {
           { model: battery, required: false },
           { model: inverter, required: false },
           { model: solar_panel, required: false },
-          { model: rating, as: 'ratings', required: false }
+          {
+            model: rating,
+            as: 'ratings',
+            required: false,
+            include: [
+              {
+                model: account,
+                attributes: ['accountId', 'Fname', 'Lname']
+              }
+            ]
+          }
         ]
       });
+
 
       if (!Products || Products.length === 0) {
         return { success: false, message: "No products found in your shop." };
@@ -413,7 +424,14 @@ async getMyProduct(userId) {
             phone: product.shop?.phone
           },
           details: {},
-          reviews: product.ratings?.map(r => r.review) || []
+          reviews: product.ratings?.map(r => ({
+            review: r.review,
+            stars: r.stars,
+            customer: {
+              accountId: r.account?.accountId,
+              name: `${r.account?.Fname || ''} ${r.account?.Lname || ''}`.trim()
+            }
+          })) || []
         };
 
         // إضافة تفاصيل حسب الفئة
@@ -444,7 +462,7 @@ async getMyProduct(userId) {
         if (base.reviews.length > 0) {
           try {
             const response = await axios.post("http://localhost:5000/predict", {
-              reviews: base.reviews
+              reviews: base.reviews.map(r => r.review)
             });
             const predictions = response.data.predictions;
 
@@ -489,7 +507,7 @@ async getMyProduct(userId) {
   }
 
   ,
-  async addReview(userId, review) {
+  async addReview(userId, review, productId) {
     try {
 
       const user = await account.findOne({
@@ -503,7 +521,7 @@ async getMyProduct(userId) {
 
       const Review = await rating.create({
         customerId: userId,
-        productId: review.productId,
+        productId: productId,
         review: review.review,
         stars: review.stars
       });

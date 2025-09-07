@@ -188,12 +188,11 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 ### Add Review
-POST http://localhost:4000/addReview
+POST http://localhost:4000/addReview/4
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "productId": 4,
   "review": "The instructions were confusing and the setup was a nightmare. Would not buy again.",
   "stars": 5
 }

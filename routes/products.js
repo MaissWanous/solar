@@ -139,10 +139,11 @@ router.post('/upload-product-pic', async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 });
-router.post('/addReview', async (req, res) => {
+router.post('/addReview/:productId', async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
     const review =req.body;
+    const productId = parseInt(req.params.productId);
     if (!authHeader?.startsWith("Bearer ")) {
       return res.status(401).json({ error: "Missing or malformed token." });
     }
@@ -151,7 +152,7 @@ router.post('/addReview', async (req, res) => {
     const decoded = jwtService.verifyToken(token);
     const userId = decoded.userId;
 
-    const response = await productService.addReview(userId,review);
+    const response = await productService.addReview(userId,review,productId);
 
     res.status(200).json({ message: "Review added successfully." });
   } catch (err) {
