@@ -248,7 +248,8 @@ POST http://localhost:4000/solarSupplies
 Content-Type: application/json
 
 {
- 
+ "latitude": 33.5138,
+  "longitude": 36.2765,
   "solarPanel": 450,
   "numNight": 3,
   "eDay": 3,
