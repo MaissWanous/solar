@@ -212,6 +212,10 @@ curl -X POST http://localhost:4000/addProduct ^
 GET http://localhost:4000/getAllProduct
 Content-Type: application/json
 
+### Get product
+GET http://localhost:4000/getProduct/1
+Content-Type: application/json
+
 ### Upload profile picture
 # in cmd 
 curl -X POST http://localhost:4000/upload-profile-pic ^
@@ -247,7 +251,7 @@ Content-Type: application/json
  
   "solarPanel": 450,
   "numNight": 3,
-  "eDay": 5,
+  "eDay": 3,
   "eNight": 3,
   "batteryType": "tubular"
 }

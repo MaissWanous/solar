@@ -116,7 +116,21 @@ router.get("/getAllProduct", async (req, res) => {
     res.status(500).json({ error: "Failed to get product." });
   }
 });
+router.get("/getProduct/:userId", async (req, res) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    const result = await productService.getMyProduct(userId);
 
+    if (!result.success) {
+      return res.status(404).json({ message: result.message });
+    }
+
+    res.status(200).json({ products: result.data });
+  } catch (error) {
+    console.error("Get all products error:", error.message);
+    res.status(500).json({ error: "Failed to get product." });
+  }
+});
 router.post('/upload-product-pic', async (req, res) => {
   try {
     const authHeader = req.headers.authorization;

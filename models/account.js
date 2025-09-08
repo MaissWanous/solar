@@ -18,7 +18,6 @@ module.exports = (sequelize, DataTypes) => {
     }
   });
 
-  // تعريف العلاقات هنا لكن بدون استدعاء Message مباشرة
   account.associate = (models) => {
     account.hasMany(models.Message, {
       as: "sentMessages",
@@ -28,6 +27,11 @@ module.exports = (sequelize, DataTypes) => {
     account.hasMany(models.Message, {
       as: "receivedMessages",
       foreignKey: "receiverId"
+    });
+
+    // ✅ العلاقة مع shop
+    account.hasMany(models.shop, {
+      foreignKey: 'shopKeeperId'
     });
   };
 
