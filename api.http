@@ -124,8 +124,8 @@ Content-Type: application/json
     "category":"battery"
   },
   "additionalData":{
-    "batteryType":"3",
-    "batterySize":"77"
+    "batteryType":"tubular",
+    "batterySize":"100"
   }
 }
 ###add inverter
@@ -226,17 +226,6 @@ Authorization: Bearer {{token}}
 GET http://localhost:4000/chats
 Authorization: Bearer {{token}}
 
-### Add new link
-POST http://localhost:4000/addLinks
-Authorization: Bearer {{token}}
-Content-Type: application/json
-
-{
-  "linkInfo": {
-    "linkName": "GitHub",
-    "link": "https://github.com/myusername"
-  }
-}
 
 ### Estimate Solar Energy
 #uvicorn solar_api:app --reload بستخدم هي التعليمة لشغل هي 
@@ -255,8 +244,7 @@ POST http://localhost:4000/solarSupplies
 Content-Type: application/json
 
 {
-  "latitude": 25.276987,
-  "longitude": 55.296249,
+ 
   "solarPanel": 450,
   "numNight": 3,
   "eDay": 5,

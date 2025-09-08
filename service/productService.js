@@ -30,8 +30,8 @@ const productService = {
       }
 
       // 2. Validate
-      if (!productData.category || !productData.name || !productData.price) {
-        throw new Error("Missing required product fields (category, name, price).");
+      if (!productData.category) {
+        throw new Error("Missing required product fields (category).");
       }
 
       // 3. Attach shopId
