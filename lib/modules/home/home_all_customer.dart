@@ -16,97 +16,98 @@ class _Home_All_CustomerState extends State<Home_All_Customer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
+        body: SafeArea(
         top: true,
         bottom: false,
         child: CustomScrollView(
-          slivers: [
-            SliverPersistentHeader(
-              pinned: true,
-              delegate: _ButtonBarDelegate(
-                minHeight: 55,
-                maxHeight: 55,
-                child: Container(
-                  height: 55,
-                  color: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      return SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: [
-                            _buildButton('All', yellow, Colors.white, context, 1),
-                            const SizedBox(width: 10),
-                            _buildButton('Solar panels', off_white, Colors.black, context, 2),
-                            const SizedBox(width: 10),
-                            _buildButton('Inverters', off_white, Colors.black, context, 3),
-                            const SizedBox(width: 10),
-                            _buildButton('Batteries', off_white, Colors.black, context, 4),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 10),
-                    Text('Solar panels', style: TextStyle(fontWeight: FontWeight.w500)),
-                    SizedBox(height: 10),
-                    SizedBox(
-                      height: 265.0,
-                      width: double.infinity,
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) => buildSolar_panelItem(),
-                        separatorBuilder: (context, index) => const SizedBox(width: 10.0),
-                        itemCount: 10,
-                      ),
-                    ),
-                    SizedBox(height: 10),
+        slivers: [
+        SliverPersistentHeader(
+        pinned: true,
+        delegate: _ButtonBarDelegate(
+        minHeight: 55,
+        maxHeight: 55,
+        child: Container(
+        height: 55,
+        color: Colors.white,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+    child: LayoutBuilder(
+    builder: (context, constraints) {
+    return SingleChildScrollView(
+    scrollDirection: Axis.horizontal,
+    child: Row(
+    children: [
+    _buildButton('All', yellow, Colors.white, context, 1),
+    const SizedBox(width: 10),
+    _buildButton('Solar panels', off_white, Colors.black, context, 2),
+    const SizedBox(width: 10),
+    _buildButton('Inverters', off_white, Colors.black, context, 3),
+    const SizedBox(width: 10),
+    _buildButton('Batteries', off_white, Colors.black, context, 4),
+    ],
+    ),
+    );
+    },
+    ),
+    ),
+    ),
+    ),
+    SliverToBoxAdapter(
+    child: Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 20),
+    child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+    SizedBox(height: 10),
+    Text('Solar panels', style: TextStyle(fontWeight: FontWeight.w500)),
+    SizedBox(height: 10),
+    SizedBox(
+    height: 265.0,
+    width: double.infinity,
+    child: ListView.separated(
+    scrollDirection: Axis.horizontal,
+    itemBuilder: (context, index) => buildSolar_panelItem(),
+    separatorBuilder: (context, index) => const SizedBox(width: 10.0),
+    itemCount: 10,
+    ),
+    ),
+    SizedBox(height: 10),
 
-                    Text('Inverters', style: TextStyle(fontWeight: FontWeight.w500)),
-                    SizedBox(height: 10),
-                    SizedBox(
-                      height: 265.0,
-                      width: double.infinity,
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) => buildInverterItem(),
-                        separatorBuilder: (context, index) => const SizedBox(width: 10.0),
-                        itemCount: 10,
-                      ),
-                    ),
-                    SizedBox(height: 10),
+    Text('Inverters', style: TextStyle(fontWeight: FontWeight.w500)),
+    SizedBox(height: 10),
+    SizedBox(
+    height: 265.0,
+    width: double.infinity,
+    child: ListView.separated(
+    scrollDirection: Axis.horizontal,
+    itemBuilder: (context, index) => buildInverterItem(),
+    separatorBuilder: (context, index) => const SizedBox(width: 10.0),
+    itemCount: 10,
+    ),
+    ),
+    SizedBox(height: 10),
 
-                    Text('Batteries', style: TextStyle(fontWeight: FontWeight.w500)),
-                    SizedBox(height: 10),
-                    SizedBox(
-                      height: 265.0,
-                      width: double.infinity,
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) => buildSolar_panelItem(),
-                        separatorBuilder: (context, index) => const SizedBox(width: 10.0),
-                        itemCount: 10,
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                  ],
-                ),
-              ),
-            ),
 
-          ],
+      Text('Batteries', style: TextStyle(fontWeight: FontWeight.w500)),
+      SizedBox(height: 10),
+      SizedBox(
+        height: 265.0,
+        width: double.infinity,
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          itemBuilder: (context, index) => buildSolar_panelItem(),
+          separatorBuilder: (context, index) => const SizedBox(width: 10.0),
+          itemCount: 10,
         ),
       ),
+      SizedBox(height: 20),
+    ],
+    ),
+    ),
+    ),
+
+        ],
+        ),
+        ),
     );
   }
 }
@@ -169,6 +170,7 @@ Widget _buildButton(String text, Color bg, Color txtColor, BuildContext context,
     ),
   );
 }
+
 
 Widget buildSolar_panelItem() => Container(
   decoration: BoxDecoration(
@@ -244,6 +246,7 @@ Widget buildSolar_panelItem() => Container(
     ),
   ),
 );
+
 
 Widget buildInverterItem() => Container(
   decoration: BoxDecoration(
@@ -346,6 +349,7 @@ Widget buildInverterItem() => Container(
     ),
   ),
 );
+
 
 Widget buildBatteriesItem() => Container(
   decoration: BoxDecoration(

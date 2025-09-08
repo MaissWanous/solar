@@ -93,44 +93,7 @@ class _Settings_CustomerState extends State<Settings_Customer> {
             ),
             InkWell(
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=> Edit_Email()));
-              },
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 15),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.email_outlined,
-                        color: Colors.black,
-                        size: 25.0,
-                      ),
-                      SizedBox(width: 8),
-                      Text(
-                        'Email',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 15),
-                  Container(
-                    height: 2,
-                    color:gray,
-                    width: double.infinity,
-                  ),
-                ],
-              ),
-            ),
-            InkWell(
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=> Edit_Name()));
+                Navigator.push(context, MaterialPageRoute(builder: (context)=> Edit_Name(token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsImlhdCI6MTc1NzE2MTI1NCwiZXhwIjoxNzU3MTcyMDU0fQ.y2soz82zNRHVjVBbm-MmWVhinOvt3IaeKW9ekebf3Cw',)));
               },
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -167,7 +130,7 @@ class _Settings_CustomerState extends State<Settings_Customer> {
             ),
             InkWell(
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=> Edit_Phone()));
+                Navigator.push(context, MaterialPageRoute(builder: (context)=> Edit_Phone(token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsImlhdCI6MTc1NzE2MTI1NCwiZXhwIjoxNzU3MTcyMDU0fQ.y2soz82zNRHVjVBbm-MmWVhinOvt3IaeKW9ekebf3Cw',)));
               },
               child: Column(
                 mainAxisSize: MainAxisSize.min,

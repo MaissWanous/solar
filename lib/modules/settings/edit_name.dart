@@ -1,32 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:udemy_flutter/modules/settings/settings.dart';
-import 'package:udemy_flutter/modules/settings/settings_%20shopkeeper.dart';
-import 'package:udemy_flutter/shared/components/components.dart';
+import 'package:udemy_flutter/controllers/edit_controller.dart';
+import 'package:get/get.dart';
+import 'package:udemy_flutter/controllers/ProfileController.dart';
 
 class Edit_Name extends StatefulWidget {
+  final String token;
+
+  Edit_Name({required this.token});
+
   @override
-  State<Edit_Name> createState() => _Edit_NameState();
+  State<Edit_Name> createState() => _EditNameState();
 }
 
-const Color yellow = Color(0xFFFFBF00);
-const Color more_gray = Color(0xFFB3B3B3);
+class _EditNameState extends State<Edit_Name> {
+  late EditController controller;
+  final ProfileController profileController = Get.find<ProfileController>();
 
-var nameController = TextEditingController();
-var formKey = GlobalKey<FormState>();
+  @override
+  void initState() {
+    super.initState();
+    controller = EditController(widget.token);
+    controller.fnameController.text = profileController.profile.value.fname;
+  }
 
-class _Edit_NameState extends State<Edit_Name> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final bool isSmall = screenWidth < 360;
     final bool isMedium = screenWidth >= 360 && screenWidth < 600;
 
-    final double padding = isSmall
-        ? 12
-        : isMedium
-        ? 20
-        : 25;
-
+    final double padding = isSmall ? 12 : isMedium ? 20 : 25;
     final double buttonWidth = screenWidth * 0.5;
 
     return Scaffold(
@@ -50,36 +53,49 @@ class _Edit_NameState extends State<Edit_Name> {
       body: Padding(
         padding: EdgeInsets.all(padding),
         child: Form(
-          key: formKey,
+          key: controller.formKey,
           child: Column(
             children: [
-              defaultFormField(
-                controller: nameController,
-                hint: 'Name',
-                prefix: Icons.person,
-                type: TextInputType.name,
-                validate: (String? value) {
+              TextFormField(
+                controller: controller.fnameController,
+                decoration: InputDecoration(
+                  hintText: 'First Name',
+                  prefixIcon: Icon(Icons.person),
+                ),
+                validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return "Name must not be empty";
+                    return "First name must not be empty";
                   }
                   return null;
                 },
               ),
-              SizedBox(height: 60.0),
+              SizedBox(height: 40),
               Center(
-                child: defultButton(
-                  text: 'Save',
-                  function: () {
-                    if (formKey.currentState!.validate()) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Settings_Shopkeeper(),
-                        ),
-                      );
-                    }
-                  },
+                child: SizedBox(
                   width: buttonWidth,
+                  child: Obx(() => ElevatedButton(
+                    onPressed: controller.isLoading.value
+                        ? null
+                        : () async {
+                      if (controller.formKey.currentState!.validate()) {
+                        bool success = await controller
+                            .updateName(controller.fnameController.text);
+                        if (success) {
+                           await profileController.fetchProfile();
+                          Get.back();
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text("Failed to update profile"),
+                            ),
+                          );
+                        }
+                      }
+                    },
+                    child: controller.isLoading.value
+                        ? CircularProgressIndicator(color: Colors.white)
+                        : Text('Save'),
+                  )),
                 ),
               ),
             ],

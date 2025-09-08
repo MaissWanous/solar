@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:udemy_flutter/modules/settings/settings.dart';
-import 'package:udemy_flutter/modules/settings/settings_%20shopkeeper.dart';
+ import 'package:get/get.dart';
+import 'package:udemy_flutter/controllers/edit_controller.dart';
+import 'package:udemy_flutter/controllers/ProfileController.dart';
 import 'package:udemy_flutter/shared/components/components.dart';
 
 class Edit_Phone extends StatefulWidget {
+  final String token;
+
+  Edit_Phone({required this.token});
+
   @override
   State<Edit_Phone> createState() => _Edit_PhoneState();
 }
@@ -11,22 +16,24 @@ class Edit_Phone extends StatefulWidget {
 const Color yellow = Color(0xFFFFBF00);
 const Color more_gray = Color(0xFFB3B3B3);
 
-var phoneController = TextEditingController();
-var formKey = GlobalKey<FormState>();
-
 class _Edit_PhoneState extends State<Edit_Phone> {
+  late EditController controller;
+  final ProfileController profileController = Get.find<ProfileController>();
+
+  @override
+  void initState() {
+    super.initState();
+    controller = EditController(widget.token);
+    controller.phoneController.text = profileController.profile.value.phone ?? '';
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final bool isSmall = screenWidth < 360;
     final bool isMedium = screenWidth >= 360 && screenWidth < 600;
 
-    final double padding = isSmall
-        ? 12
-        : isMedium
-        ? 20
-        : 25;
-
+    final double padding = isSmall ? 12 : isMedium ? 20 : 25;
     final double buttonWidth = screenWidth * 0.5;
 
     return Scaffold(
@@ -50,11 +57,11 @@ class _Edit_PhoneState extends State<Edit_Phone> {
       body: Padding(
         padding: EdgeInsets.all(padding),
         child: Form(
-          key: formKey,
+          key: controller.formKey,
           child: Column(
             children: [
               defaultFormField(
-                controller: phoneController,
+                controller: controller.phoneController,
                 hint: 'Phone',
                 prefix: Icons.phone,
                 type: TextInputType.number,
@@ -67,19 +74,28 @@ class _Edit_PhoneState extends State<Edit_Phone> {
               ),
               SizedBox(height: 60.0),
               Center(
-                child: defultButton(
-                  text: 'Save',
-                  function: () {
-                    if (formKey.currentState!.validate()) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Settings_Shopkeeper(),
-                        ),
-                      );
-                    }
-                  },
+                child: SizedBox(
                   width: buttonWidth,
+                  child: Obx(() => ElevatedButton(
+                    onPressed: controller.isLoading.value
+                        ? null
+                        : () async {
+                      if (controller.formKey.currentState!.validate()) {
+                        bool success = await controller.updatePhone(controller.phoneController.text);
+                        if (success) {
+                          await profileController.fetchProfile();
+                          Get.back();
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Failed to update phone")),
+                          );
+                        }
+                      }
+                    },
+                    child: controller.isLoading.value
+                        ? CircularProgressIndicator(color: Colors.white)
+                        : Text('Save'),
+                  )),
                 ),
               ),
             ],

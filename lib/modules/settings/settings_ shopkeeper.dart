@@ -6,6 +6,7 @@ import 'package:udemy_flutter/modules/settings/edit_name.dart';
 import 'package:udemy_flutter/modules/settings/edit_phone.dart';
 import 'package:udemy_flutter/modules/settings/edit_shop_name.dart';
 import 'package:udemy_flutter/modules/settings/edit_shop_number.dart';
+import 'package:udemy_flutter/token.dart';
 
 class Settings_Shopkeeper extends StatefulWidget {
   @override
@@ -147,7 +148,7 @@ class _Settings_ShopkeeperState extends State<Settings_Shopkeeper> {
             fontSize: fontSize,
             onTap: () {
               Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => Edit_Name()));
+                  MaterialPageRoute(builder: (context) => Edit_Name(token: Token.apiToken)));
             },
           ),
           _divider(),
@@ -158,7 +159,7 @@ class _Settings_ShopkeeperState extends State<Settings_Shopkeeper> {
             fontSize: fontSize,
             onTap: () {
               Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => Edit_Phone()));
+                  MaterialPageRoute(builder: (context) => Edit_Phone(token: Token.apiToken)));
             },
           ),
           _divider(),

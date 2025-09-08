@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:udemy_flutter/modules/settings/settings.dart';
+import 'package:udemy_flutter/controllers/reset_password_controller.dart';
 import 'package:udemy_flutter/modules/settings/settings_%20shopkeeper.dart';
-import 'package:udemy_flutter/shared/components/components.dart';
+ import 'package:udemy_flutter/shared/components/components.dart';
 
 class Change_Password extends StatefulWidget {
   @override
@@ -18,6 +18,12 @@ var confirmPasswordController = TextEditingController();
 var formKey = GlobalKey<FormState>();
 
 class _Change_PasswordState extends State<Change_Password> {
+  final ResetPasswordController _controller = ResetPasswordController();
+
+  final String userToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsImlhdCI6MTc1NzIwOTYzNiwiZXhwIjoxNzU3MjIwNDM2fQ.Sowit8xOA059U2BdrgcmzHKwZvD3v2193TbGxj6uU78';
+
+  bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -93,7 +99,7 @@ class _Change_PasswordState extends State<Change_Password> {
                 type: TextInputType.visiblePassword,
                 validate: (String? value) {
                   if (value == null || value.isEmpty) {
-                    return "Confirm password must not empty";
+                    return "Confirm password must not be empty";
                   }
                   if (value != newPasswordController.text) {
                     return "Confirm password does not match";
@@ -106,16 +112,45 @@ class _Change_PasswordState extends State<Change_Password> {
               ),
               SizedBox(height: largeSpacing),
               Center(
-                child: defultButton(
+                child: isLoading
+                    ? CircularProgressIndicator(color: yellow)
+                    : defultButton(
                   text: 'Save',
-                  function: () {
+                  function: () async {
                     if (formKey.currentState!.validate()) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Settings_Shopkeeper(),
-                        ),
-                      );
+                      setState(() {
+                        isLoading = true;
+                      });
+                      try {
+                        final response = await _controller.changePassword(
+                          oldPassword: oldPasswordController.text.trim(),
+                          newPassword: newPasswordController.text.trim(),
+                          token: userToken,
+                        );
+
+                        setState(() {
+                          isLoading = false;
+                        });
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(response.message)),
+                        );
+
+                        // توجيه لصفحة الإعدادات بعد النجاح
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Settings_Shopkeeper(),
+                          ),
+                        );
+                      } catch (e) {
+                        setState(() {
+                          isLoading = false;
+                        });
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Error: $e')),
+                        );
+                      }
                     }
                   },
                   width: buttonWidth,

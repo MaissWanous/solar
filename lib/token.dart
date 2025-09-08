@@ -1,0 +1,3 @@
+class Token{
+   static const String apiToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsImlhdCI6MTc1NzM2MDQxNiwiZXhwIjoxNzU3MzcxMjE2fQ.QQYTGngbQy48Cg_PMXutiPyG59co5R6kHna84_MnseQ";
+}
