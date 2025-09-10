@@ -7,8 +7,8 @@ const solarService = {
     const transformDay = parseFloat(eDay) * 230;
     const date = new Date("2024-12-08");
     const times = SunCalc.getTimes(date, latitude, longitude);
-   let  numDay =  (times.sunset - times.sunrise) / (1000 * 60 * 60); 
- numDay=parseInt(numDay/2);
+    let numDay = (times.sunset - times.sunrise) / (1000 * 60 * 60);
+    numDay = parseInt(numDay / 2);
     const dayLoad = transformDay;
 
     // Adjust panel output for 25% loss
@@ -126,7 +126,7 @@ const solarService = {
     // Return results
     return {
       solarPanel: solarPanel,
-      numPanel:Math.round( numPanel),
+      numPanel: Math.round(numPanel),
       Battery: batteryCapacity,
       inverter: possibility,
       batteryNum: numBattery,

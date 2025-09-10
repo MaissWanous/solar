@@ -451,7 +451,8 @@ picture:product.shop.account?.profilePic
           shop: {
             shopId: product.shop?.shopId,
             shopname: product.shop?.shopname,
-            phone: product.shop?.phone
+            phone: product.shop?.phone,
+            shopKeeperId:product.shop?.shopKeeperId
           },
           details: {},
           reviews: product.ratings?.map(r => ({
