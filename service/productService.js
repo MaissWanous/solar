@@ -276,32 +276,32 @@ const productService = {
   ,
   async getMyProduct(userId) {
     try {
-     const myProducts = await products.findAll({
-  include: [
-    {
-      model: shop,
-      where: { shopKeeperId: userId },
-      include: [{
-        model: account,
-        attributes: ['accountId', 'Fname', 'Lname', 'phone', 'profilePic']
-      }]
-    },
-    { model: battery, required: false },
-    { model: inverter, required: false },
-    { model: solar_panel, required: false },
-    {
-      model: rating,
-      as: 'ratings',
-      required: false,
-      include: [
-        {
-          model: account,
-          attributes: ['accountId', 'Fname', 'Lname', 'profilePic']
-        }
-      ]
-    }
-  ]
-});
+      const myProducts = await products.findAll({
+        include: [
+          {
+            model: shop,
+            where: { shopKeeperId: userId },
+            include: [{
+              model: account,
+              attributes: ['accountId', 'Fname', 'Lname', 'phone', 'profilePic']
+            }]
+          },
+          { model: battery, required: false },
+          { model: inverter, required: false },
+          { model: solar_panel, required: false },
+          {
+            model: rating,
+            as: 'ratings',
+            required: false,
+            include: [
+              {
+                model: account,
+                attributes: ['accountId', 'Fname', 'Lname', 'profilePic']
+              }
+            ]
+          }
+        ]
+      });
 
 
       if (!myProducts || myProducts.length === 0) {
@@ -316,16 +316,17 @@ const productService = {
           name: product.name ?? null,
           price: product.price ?? null,
           picture: product.picture ?? null,
-          description:product.description,
+          description: product.description,
           category: product.category,
           createdAt: product.createdAt,
           shop: {
             shopId: product.shop.shopId,
             shopname: product.shop.shopname ?? undefined,
             phone: product.shop.phone ?? undefined,
-      shopKeeperName: product.shop.account?.Fname,
-shopKeeperPhone: product.shop.account?.phone,
-picture:product.shop.account?.profilePic
+            shopKeeperName: product.shop.account?.Fname,
+            shopKeeperPhone: product.shop.account?.phone,
+            picture: product.shop.account?.profilePic,
+            location: product.shop.account?.country
           },
           details: {},
           reviews: product.ratings?.map(r => ({
@@ -364,7 +365,7 @@ picture:product.shop.account?.profilePic
 
         // تحليل الريفيوهات
         let positiveCount = 0;
-       if (base.reviews.length > 0) {
+        if (base.reviews.length > 0) {
           try {
             const response = await axios.post("http://localhost:5000/predict", {
               reviews: base.reviews.map(r => r.review)
@@ -446,13 +447,13 @@ picture:product.shop.account?.profilePic
           price: product.price ?? null,
           picture: product.picture ?? null,
           category: product.category,
-          description:product.description,
+          description: product.description,
           createdAt: product.createdAt,
           shop: {
             shopId: product.shop?.shopId,
             shopname: product.shop?.shopname,
             phone: product.shop?.phone,
-            shopKeeperId:product.shop?.shopKeeperId
+            shopKeeperId: product.shop?.shopKeeperId
           },
           details: {},
           reviews: product.ratings?.map(r => ({
