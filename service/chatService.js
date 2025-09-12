@@ -34,6 +34,10 @@ const chatService = {
           model: account,
           as: "sender",
           attributes: ["accountId", "Fname", "profilePic"]
+        }, {
+          model: account,
+          as: "receiver",
+          attributes: ["accountId", "Fname", "profilePic"]
         }
       ],
       order: [["createdAt", "DESC"]]

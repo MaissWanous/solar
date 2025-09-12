@@ -1,4 +1,4 @@
-@token =eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc1NzUwNTkxOSwiZXhwIjoxNzU3NTE2NzE5fQ.JLPWLNPsoYb50PUlb1g1Hj4a5Vj1fjDBLkjVMJLbuM8
+@token =eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc1NzY4MTIzMSwiZXhwIjoxNzU3NjkyMDMxfQ.po9m5DDKdXAjEv1tVO0hzDviWaEHaNpbhn0wkiV-j0Y
 ### Create a new user
 POST http://localhost:4000/signup
 Content-Type: application/json

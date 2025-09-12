@@ -453,7 +453,8 @@ const productService = {
             shopId: product.shop?.shopId,
             shopname: product.shop?.shopname,
             phone: product.shop?.phone,
-            shopKeeperId: product.shop?.shopKeeperId
+            shopKeeperId: product.shop?.shopKeeperId,
+            picture:product.shop?.profilePic
           },
           details: {},
           reviews: product.ratings?.map(r => ({
