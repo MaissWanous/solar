@@ -103,6 +103,7 @@ const solarService = {
         include: [{ model: shop }]
       }]
     });
+    let mppt=possibility<8000?60:90;
 
     const batteries = await battery.findAll({
       where: {
@@ -130,6 +131,8 @@ const solarService = {
       Battery: batteryCapacity,
       inverter: possibility,
       batteryNum: numBattery,
+      solarChMod:possibility,
+      mppt:mppt,
       products: {
         inverters,
         batteries,
