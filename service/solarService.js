@@ -3,6 +3,13 @@ const SunCalc = require('suncalc');
 
 const solarService = {
   async calculateSupplies(latitude, longitude, solarPanel, numNight, eDay, eNight, batteryType) {
+  if (batteryType==null) {
+    batteryType="lethium"
+  }
+  if (solarPanel==null) {
+    solarPanel=585
+  }
+  
     // Convert daytime energy usage (kWh) to watt-hours (Wh)
     const transformDay = parseFloat(eDay) * 230;
     const date = new Date("2024-12-08");

@@ -18,56 +18,56 @@ const userService = {
     return await account.findOne({ where: { email: email } });
   },
 
- async findById(id) {
-  const user = await account.findByPk(id);
-  if (!user) return null;
+  async findById(id) {
+    const user = await account.findByPk(id);
+    if (!user) return null;
 
-  if (user.type === "shopKeeper") {
-    const shopRecord = await shop.findOne({ where: { shopKeeperId: user.accountId } });
-    if (shopRecord) {
-      user.dataValues.shop = shopRecord; 
+    if (user.type === "shopKeeper") {
+      const shopRecord = await shop.findOne({ where: { shopKeeperId: user.accountId } });
+      if (shopRecord) {
+        user.dataValues.shop = shopRecord;
+      }
     }
+
+    return user;
   }
+  ,
+  async updateProfile(userId, updates) {
+    const user = await account.findByPk(userId);
+    if (!user) return null;
 
-  return user;
-}
-,
-async updateProfile(userId, updates) {
-  const user = await account.findByPk(userId);
-  if (!user) return null;
+    const allowedFields = ["Fname", "Lname", "phone", "country"];
+    allowedFields.forEach(field => {
+      if (updates[field] !== undefined) {
+        if (field === "phone") {
+          user[field] = parseInt(updates[field]);
+        } else {
+          user[field] = updates[field];
+        }
+      }
+    });
 
-  const allowedFields = ["Fname", "Lname", "phone", "country"];
-  allowedFields.forEach(field => {
-    if (updates[field] !== undefined) {
-      if (field === "phone") {
-        user[field] = parseInt(updates[field]);
-      } else {
-        user[field] = updates[field];
+    await user.save();
+
+
+    if (user.type === "shopKeeper") {
+      const shopRecord = await shop.findOne({ where: { shopKeeperId: user.accountId } });
+
+      if (shopRecord) {
+        if (updates.shop_name !== undefined) {
+          shopRecord.shopname = updates.shop_name;
+        }
+        if (updates.shop_phone !== undefined) {
+          shopRecord.phone = parseInt(updates.shop_phone);
+        }
+        await shopRecord.save();
+
+        user.dataValues.shop = shopRecord;
       }
     }
-  });
 
-  await user.save();
-
-  
-  if (user.type === "shopKeeper") {
-    const shopRecord = await shop.findOne({ where: { shopKeeperId: user.accountId } });
-
-    if (shopRecord) {
-      if (updates.shop_name !== undefined) {
-        shopRecord.shopname = updates.shop_name;
-      }
-      if (updates.shop_phone !== undefined) {
-        shopRecord.phone = parseInt(updates.shop_phone);
-      }
-      await shopRecord.save();
-
-      user.dataValues.shop = shopRecord;
-    }
+    return user;
   }
-
-  return user;
-}
 
   ,
   async sendCode(email) {
@@ -137,14 +137,16 @@ async updateProfile(userId, updates) {
     delete pendingUsers[email];
     return { createdUser, rawPassword: entry.rawPassword };
   },
-  async login({ email, password }) {
+  async login({ email, password, type }) {
     try {
       const user = await this.checkEmailExisting(email);
 
       if (!user) {
         throw new Error("User not found");
       }
-
+      if (user.type != type) {
+        throw new Error("the type didn't match")
+      }
       const isValidPassword = await bcrypt.compare(password, user.password);
 
       if (!isValidPassword) {

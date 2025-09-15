@@ -98,9 +98,9 @@ router.post("/upload-profile-pic", async (req, res) => {
  * Login
  */
 router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password,type } = req.body;
   try {
-    const Check = await userService.login({ email, password })
+    const Check = await userService.login({ email, password,type })
     if (Check) {
       const token = await authService.login(email, password);
       if (token.token === 0) {
