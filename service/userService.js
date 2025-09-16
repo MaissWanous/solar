@@ -137,15 +137,12 @@ const userService = {
     delete pendingUsers[email];
     return { createdUser, rawPassword: entry.rawPassword };
   },
-  async login({ email, password, type }) {
+  async login({ email, password}) {
     try {
       const user = await this.checkEmailExisting(email);
 
       if (!user) {
         throw new Error("User not found");
-      }
-      if (user.type != type) {
-        throw new Error("the type didn't match")
       }
       const isValidPassword = await bcrypt.compare(password, user.password);
 
